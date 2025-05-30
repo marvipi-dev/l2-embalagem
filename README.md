@@ -1,6 +1,6 @@
 # L2 Embalagem
 Sistema de embalagem de produtos criado para um teste técnico da empresa [L2](https://www.l2code.com.br/ "L2").
-Ele é composto por um microsserviço que embala produtos na menor quantidade de caixas possível, priorizando as de menor tamanho. A persistência de dados é feita com o SQL Server.
+Ele é composto por um microserviço que embala produtos na menor quantidade de caixas possível, priorizando as de menor tamanho. A persistência de dados é feita com o SQL Server.
 Ambos rodam em containers Docker e são executados simultaneamente por meio do Docker Compose.
 
 # Como executar
@@ -22,15 +22,15 @@ A API segue o padrão REST e possui dois endpoints: um que embala produtos e out
 ![Swagger](res/api.png)
 
 # Requisitos para entrega
-1. Fazer microserviço em .NET Core ou superior utilizando banco de dados SQL Server;
-2. Tanto o serviço como o banco de dados deve rodar via docker;
-3. Deve conter REAME.md com os pré-requisitos (provavelmente apenas o docker) e
+1. 🗹 Fazer microserviço em .NET Core ou superior utilizando banco de dados SQL Server;
+2. 🗹 Tanto o serviço como o banco de dados deve rodar via docker;
+3. 🗹 Deve conter REAME.md com os pré-requisitos (provavelmente apenas o docker) e
 comandos necessários para rodar a aplicação, recomendado utilizar o “docker-compose”
-4. A API precisa ter swagger e ser possível testar ela a partir do swagger;
-5. Enviar o código fonte via link do repositório do github;
+4. ⮽ A API precisa ter swagger e ser possível testar ela a partir do swagger;
+5. 🗹 Enviar o código fonte via link do repositório do github;
 
-# Requisitos Opcionais
-1. Segurança na autenticação da API
-2. Deve conter teste unitário
+# Requisitos opcionais
+1. ☐ Segurança na autenticação da API
+2. ☐ Deve conter teste unitário
 
 
