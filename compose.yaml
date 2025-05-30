@@ -1,0 +1,32 @@
+﻿services:
+  embalagem.api:
+    image: embalagem.api
+    build:
+      context: .
+      dockerfile: Embalagem.Api/Dockerfile
+    ports:
+      - "5233:8080"
+      - "5234:8081"
+    depends_on:
+      - embalagem-repository-sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - embalagem-network
+    restart: on-failure
+  
+  
+  embalagem-repository-sqlserver:
+    image: marvipi/embalagem-repository-sqlserver:latest
+    ports:
+      - "1433:1433"
+    networks:
+      - embalagem-network
+    volumes:
+      - sqlvolume:/var/opt/mssql
+
+networks:
+  embalagem-network:
+
+volumes:
+  sqlvolume:
