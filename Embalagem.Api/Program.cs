@@ -76,10 +76,10 @@ builder.Services.ConfigureHttpJsonOptions(o =>
 
 builder.Services.AddScoped<IRepository>(_ => new SqlServerDapper(config));
 builder.Services.AddScoped<IAutenticacaoService>(_ => new AutenticacaoService(config));
+builder.Services.AddScoped<IEmbalagemService, EmbalagemService>();
+
 
 var app = builder.Build();
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
