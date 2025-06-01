@@ -1,3 +1,4 @@
+using System.Data;
 using Dapper;
 using Embalagem.Api.Models;
 using Embalagem.Api.Views;
@@ -12,16 +13,18 @@ public class SqlServerDapper : IRepository
     private const string InsertEmbalagens = @"INSERT INTO [PedidoEmbalado] 
                                                      (pedido_id, caixa_id, produto_id)
                                               VALUES (@pedido_id, @caixa_id, @produto_id)";
-
+    private const string SelectEmbalagens = @"SELECT * FROM [PedidoEmbalado]";
+    
     private const string ExisteUsuario = @"SELECT email FROM Usuario WHERE email = @Email";
     private const string RegistrarUsuario = @"EXEC dbo.RegistrarUsuario @Email, @Senha";
+    private const string ValidarUsuario = @"SELECT dbo.ValidarUsuario(@Email, @Senha);";
 
-    private const string SelectEmbalagens = @"SELECT * FROM [PedidoEmbalado]";
+
     private readonly string _connectionString;
 
-    public SqlServerDapper(string connectionString)
+    public SqlServerDapper(IConfiguration config)
     {
-        _connectionString = connectionString;
+        _connectionString = config["ConnectionStrings:Default"];
     }
 
     public IEnumerable<CaixaModel> LerCaixas()
@@ -79,7 +82,16 @@ public class SqlServerDapper : IRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            var sucesso = connection.Execute(RegistrarUsuario, usuario);
+            var sucesso = connection.Execute(RegistrarUsuario, usuario, commandType: CommandType.StoredProcedure);
+            return sucesso == 1;
+        }
+    }
+
+    public bool Validar(Usuario usuario)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            var sucesso = connection.ExecuteScalar<int>(ValidarUsuario, usuario);
             return sucesso == 1;
         }
     }

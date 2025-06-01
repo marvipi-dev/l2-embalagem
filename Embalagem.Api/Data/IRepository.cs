@@ -10,4 +10,5 @@ public interface IRepository
     public IEnumerable<EmbalagemGetResponse> LerEmbalagens();
     public bool Existe(Usuario usuario);
     public bool Escrever(Usuario usuario);
+    public bool Validar(Usuario usuario);
 }

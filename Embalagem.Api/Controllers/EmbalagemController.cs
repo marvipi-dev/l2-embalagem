@@ -2,10 +2,12 @@ using Embalagem.Api.Data;
 using Embalagem.Api.ExtensionMethods;
 using Embalagem.Api.Models;
 using Embalagem.Api.Views;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Embalagem.Api.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class EmbalagemController : ControllerBase
