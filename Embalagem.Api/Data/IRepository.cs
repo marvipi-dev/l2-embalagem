@@ -8,4 +8,6 @@ public interface IRepository
     public IEnumerable<CaixaModel> LerCaixas();
     public bool Escrever(IEnumerable<Views.Embalagem> embalagens);
     public IEnumerable<EmbalagemGetResponse> LerEmbalagens();
+    public bool Existe(Usuario usuario);
+    public bool Escrever(Usuario usuario);
 }

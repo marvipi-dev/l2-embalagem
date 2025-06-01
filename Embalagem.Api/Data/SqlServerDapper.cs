@@ -13,6 +13,9 @@ public class SqlServerDapper : IRepository
                                                      (pedido_id, caixa_id, produto_id)
                                               VALUES (@pedido_id, @caixa_id, @produto_id)";
 
+    private const string ExisteUsuario = @"SELECT email FROM Usuario WHERE email = @Email";
+    private const string RegistrarUsuario = @"EXEC dbo.RegistrarUsuario @Email, @Senha";
+
     private const string SelectEmbalagens = @"SELECT * FROM [PedidoEmbalado]";
     private readonly string _connectionString;
 
@@ -60,6 +63,24 @@ public class SqlServerDapper : IRepository
                 CaixaId = e.caixa_id,
                 ProdutoId = e.produto_id
             });
+        }
+    }
+
+    public bool Existe(Usuario usuario)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            var resposta = connection.QueryFirstOrDefault<Usuario>(ExisteUsuario, usuario);
+            return resposta != null;
+        }
+    }
+
+    public bool Escrever(Usuario usuario)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            var sucesso = connection.Execute(RegistrarUsuario, usuario);
+            return sucesso == 1;
         }
     }
 }
