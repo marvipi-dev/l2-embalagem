@@ -3,30 +3,29 @@ using Embalagem.Api.Services;
 using Embalagem.Api.Views;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Embalagem.Api.Controllers
+namespace Embalagem.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AutenticacaoController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AutenticacaoController : ControllerBase
+    private readonly IAutenticacaoService _autenticacaoService;
+    private readonly IRepository _repository;
+
+    public AutenticacaoController(IRepository repository, IAutenticacaoService autenticacao)
     {
-        private readonly IRepository _repository;
-        private readonly IAutenticacaoService _autenticacaoService;
+        _repository = repository;
+        _autenticacaoService = autenticacao;
+    }
 
-        public AutenticacaoController(IRepository repository, IAutenticacaoService autenticacao)
+    [HttpPost]
+    public IActionResult GerarToken([FromBody] Usuario usuario)
+    {
+        if (_repository.Validar(usuario))
         {
-            _repository = repository;
-            _autenticacaoService = autenticacao;
+            return Ok(_autenticacaoService.GerarToken());
         }
-        
-        [HttpPost]
-        public IActionResult GerarToken([FromBody] Usuario usuario)
-        {
-            if (_repository.Validar(usuario))
-            {
-                return Ok(_autenticacaoService.GerarToken());
-            }
 
-            return Unauthorized();
-        }
+        return Unauthorized();
     }
 }

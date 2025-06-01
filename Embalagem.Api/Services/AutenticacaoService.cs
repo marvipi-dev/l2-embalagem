@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using Embalagem.Api.Views;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Embalagem.Api.Services;
@@ -13,7 +12,7 @@ public class AutenticacaoService : IAutenticacaoService
     {
         _config = config;
     }
-    
+
     public string GerarToken()
     {
         var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
@@ -22,7 +21,7 @@ public class AutenticacaoService : IAutenticacaoService
             issuer: _config["Jwt:Issuer"],
             audience: _config["Jwt:Audience"],
             expires: DateTime.UtcNow.AddHours(Convert.ToInt32(_config["Jwt:Expiry"])));
-        
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenString = tokenHandler.WriteToken(token);
 

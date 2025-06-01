@@ -13,8 +13,9 @@ public class SqlServerDapper : IRepository
     private const string InsertEmbalagens = @"INSERT INTO [PedidoEmbalado] 
                                                      (pedido_id, caixa_id, produto_id)
                                               VALUES (@pedido_id, @caixa_id, @produto_id)";
+
     private const string SelectEmbalagens = @"SELECT * FROM [PedidoEmbalado]";
-    
+
     private const string ExisteUsuario = @"SELECT email FROM Usuario WHERE email = @Email";
     private const string RegistrarUsuarioProcedure = @"dbo.RegistrarUsuario";
     private const string ValidarUsuario = @"SELECT dbo.ValidarUsuario(@Email, @Senha);";
@@ -43,6 +44,7 @@ public class SqlServerDapper : IRepository
             foreach (var embalagem in embalagens)
             foreach (var caixa in embalagem.Caixas)
             foreach (var produto in caixa.Produtos)
+            {
                 linhasEscritas += connection.Execute(InsertEmbalagens,
                     new
                     {
@@ -50,6 +52,7 @@ public class SqlServerDapper : IRepository
                         caixa_id = caixa.CaixaId,
                         produto_id = produto
                     });
+            }
         }
 
         return linhasEscritas > 0;
@@ -82,7 +85,8 @@ public class SqlServerDapper : IRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            var sucesso = connection.Execute(RegistrarUsuarioProcedure, usuario, commandType: CommandType.StoredProcedure);
+            var sucesso = connection.Execute(RegistrarUsuarioProcedure, usuario,
+                commandType: CommandType.StoredProcedure);
             return sucesso == 1;
         }
     }

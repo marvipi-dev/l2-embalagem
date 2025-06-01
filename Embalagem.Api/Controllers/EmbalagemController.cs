@@ -63,8 +63,12 @@ public class EmbalagemController : ControllerBase
         var volumeMaiorCaixa = caixas.Last().Volume;
         foreach (var pedido in pedidos)
         foreach (var produto in pedido.Produtos)
+        {
             if (produto.Dimensoes.Volume > volumeMaiorCaixa)
+            {
                 naoEmbalaveis.Add((pedido.PedidoId, produto));
+            }
+        }
 
         return naoEmbalaveis;
     }
@@ -74,6 +78,7 @@ public class EmbalagemController : ControllerBase
     {
         var pedidosFiltrados = new List<Pedido>();
         foreach (var naoEmbalavel in naoEmbalaveis)
+        {
             pedidosFiltrados = pedidos.Select(pe => new Pedido
             {
                 PedidoId = pe.PedidoId,
@@ -81,6 +86,7 @@ public class EmbalagemController : ControllerBase
                     ? pe.Produtos.Where(p => !p.Equals(naoEmbalavel.Produto))
                     : pe.Produtos
             }).ToList();
+        }
 
         pedidosFiltrados.RemoveAll(pe => !pe.Produtos.Any());
         return pedidosFiltrados;
@@ -96,14 +102,19 @@ public class EmbalagemController : ControllerBase
         {
             var cabemUnicaCaixa = false;
             foreach (var caixa in caixas)
+            {
                 if (cabemUnicaCaixa = caixa.CabemTodos(pedido.VolumeProdutos()))
                 {
                     var pedidoEmbalado = caixa.Embalar(pedido);
                     embalagens.Add(pedidoEmbalado);
                     break;
                 }
+            }
 
-            if (!cabemUnicaCaixa) embalarEmVarias.Add(pedido);
+            if (!cabemUnicaCaixa)
+            {
+                embalarEmVarias.Add(pedido);
+            }
         }
 
         return (embalagens, embalarEmVarias);
@@ -121,7 +132,10 @@ public class EmbalagemController : ControllerBase
             {
                 var embalagem = caixa.EmbalarParcialmente(pedido);
                 embaladosVariasCaixas.AddRange(embalagem.embalagens);
-                if (!embalagem.incabiveis.Any()) break;
+                if (!embalagem.incabiveis.Any())
+                {
+                    break;
+                }
 
                 naoEmbalados.AddRange(embalagem.incabiveis);
             }

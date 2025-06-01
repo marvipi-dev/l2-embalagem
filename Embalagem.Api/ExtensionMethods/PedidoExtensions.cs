@@ -8,7 +8,9 @@ public static class PedidoExtensions
     {
         var volume = 0;
         foreach (var produto in pedido.Produtos)
+        {
             volume += produto.Dimensoes.Altura * produto.Dimensoes.Largura * produto.Dimensoes.Comprimento;
+        }
 
         return volume;
     }

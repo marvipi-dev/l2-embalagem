@@ -56,7 +56,10 @@ public class CaixaModel
 
 
         var naoCouberamProdutos = produtos.Skip(qntsCabem);
-        if (!naoCouberamProdutos.Any()) return (embalagens, incabiveis);
+        if (!naoCouberamProdutos.Any())
+        {
+            return (embalagens, incabiveis);
+        }
 
         var naoCouberamPedido = new Pedido
         {
@@ -64,9 +67,13 @@ public class CaixaModel
             Produtos = naoCouberamProdutos
         };
         if (CabemTodos(naoCouberamPedido.VolumeProdutos()))
+        {
             embalagens.AddRange(Embalar(naoCouberamPedido));
+        }
         else
+        {
             incabiveis.AddRange(naoCouberamProdutos);
+        }
 
         return (embalagens, incabiveis);
     }
@@ -77,7 +84,10 @@ public class CaixaModel
         var qntsCabem = 0;
         foreach (var produto in produtos)
         {
-            if (somaVolume + produto.Dimensoes.Volume > Volume) break;
+            if (somaVolume + produto.Dimensoes.Volume > Volume)
+            {
+                break;
+            }
 
             somaVolume += produto.Dimensoes.Volume;
             qntsCabem++;

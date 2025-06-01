@@ -1,31 +1,29 @@
 using Embalagem.Api.Data;
 using Embalagem.Api.Views;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Embalagem.Api.Controllers
+namespace Embalagem.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class UsuarioController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsuarioController : ControllerBase
+    private readonly IRepository _repository;
+
+    public UsuarioController(IRepository repository)
     {
-        private readonly IRepository _repository;
+        _repository = repository;
+    }
 
-        public UsuarioController(IRepository repository)
+    [HttpPost]
+    public IActionResult Registrar([FromBody] Usuario usuario)
+    {
+        if (_repository.Existe(usuario))
         {
-            _repository = repository;
+            return Conflict("Usuario já cadastrado");
         }
-        
-        [HttpPost]
-        public IActionResult Registrar([FromBody] Usuario usuario)
-        {
-            if (_repository.Existe(usuario))
-            {
-                return Conflict("Usuario já cadastrado");
-            }
 
-            var sucesso = _repository.Escrever(usuario);
-            return sucesso ? Created() : StatusCode(StatusCodes.Status503ServiceUnavailable);
-        }
+        var sucesso = _repository.Escrever(usuario);
+        return sucesso ? Created() : StatusCode(StatusCodes.Status503ServiceUnavailable);
     }
 }

@@ -1,5 +1,3 @@
-using Embalagem.Api.Views;
-
 namespace Embalagem.Api.Services;
 
 public interface IAutenticacaoService

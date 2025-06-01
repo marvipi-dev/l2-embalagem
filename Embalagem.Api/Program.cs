@@ -24,7 +24,7 @@ builder.Services.AddAuthentication(o =>
     o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(o =>
 {
-    o.TokenValidationParameters = new()
+    o.TokenValidationParameters = new TokenValidationParameters
     {
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!)),
         ValidateIssuerSigningKey = true,
@@ -39,28 +39,29 @@ builder.Services.AddAuthentication(o =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
 {
-    o.SwaggerDoc("v1", new OpenApiInfo() { Title = "L2 Embalagem", Version = "v1" });
-    o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    o.SwaggerDoc("v1", new OpenApiInfo { Title = "L2 Embalagem", Version = "v1" });
+    o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Autorização por meio de tokens JWT.\r\n\r\nDigite 'Bearer' seguido de um token JWT válido.\r\n\r\nExemplo 'Bearer ksjdfisersf8723'."
+        Description =
+            "Autorização por meio de tokens JWT.\r\n\r\nDigite 'Bearer' seguido de um token JWT válido.\r\n\r\nExemplo 'Bearer ksjdfisersf8723'."
     });
     o.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme()
+            new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference()
+                Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            new string[] { }
         }
     });
 });
