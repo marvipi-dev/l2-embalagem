@@ -16,7 +16,7 @@ public class SqlServerDapper : IRepository
     private const string SelectEmbalagens = @"SELECT * FROM [PedidoEmbalado]";
     
     private const string ExisteUsuario = @"SELECT email FROM Usuario WHERE email = @Email";
-    private const string RegistrarUsuario = @"EXEC dbo.RegistrarUsuario @Email, @Senha";
+    private const string RegistrarUsuarioProcedure = @"dbo.RegistrarUsuario";
     private const string ValidarUsuario = @"SELECT dbo.ValidarUsuario(@Email, @Senha);";
 
 
@@ -82,7 +82,7 @@ public class SqlServerDapper : IRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            var sucesso = connection.Execute(RegistrarUsuario, usuario, commandType: CommandType.StoredProcedure);
+            var sucesso = connection.Execute(RegistrarUsuarioProcedure, usuario, commandType: CommandType.StoredProcedure);
             return sucesso == 1;
         }
     }

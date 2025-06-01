@@ -2,7 +2,7 @@
 services:
   embalagem.api:
     build:
-      context: "/home/marcus/Dev/Embalagem"
+      context: "/home/marcus/Dev/l2-embalagem"
       dockerfile: "Embalagem.Api/Dockerfile"
       target: "base"
       args:
@@ -23,14 +23,14 @@ services:
       RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
     image: "embalagem.api:dev"
     ports:
-    - "127.0.0.1:57001:57000"
-    - "127.0.0.1:57201:57200"
-    - "127.0.0.1:57401:57400"
+    - "127.0.0.1:57014:57000"
+    - "127.0.0.1:57214:57200"
+    - "127.0.0.1:57414:57400"
     volumes:
-    - "/home/marcus/Dev/Embalagem/Embalagem.Api:/app:rw"
-    - "/home/marcus/Dev/Embalagem:/src:rw"
+    - "/home/marcus/Dev/l2-embalagem/Embalagem.Api:/app:rw"
+    - "/home/marcus/Dev/l2-embalagem:/src:rw"
     - "/home/marcus/.nuget/packages:/home/app/.nuget/packages"
     - "/home/marcus/.local/share/JetBrains/RiderRemoteDebugger/2024.3.5/Linux64:/opt/JetBrains/RiderDebuggerTools"
     - "/home/marcus/.local/share/JetBrains/Toolbox/apps/rider/bin/backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
-    - "/home/marcus/.cache/JetBrains/Rider2024.3/log/DebuggerWorker/JetBrains.Debugger.Worker.2025_5_29_23_00_07:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    - "/home/marcus/.cache/JetBrains/Rider2024.3/log/DebuggerWorker/JetBrains.Debugger.Worker.2025_6_01_15_09_22:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"

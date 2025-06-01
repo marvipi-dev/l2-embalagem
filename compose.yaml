@@ -17,7 +17,7 @@
   
   
   embalagem-repository-sqlserver:
-    image: marvipi/embalagem-repository-sqlserver:latest
+    image: marvipi/embalagem-repository-sqlserver:dev
     ports:
       - "1433:1433"
     networks:

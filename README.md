@@ -15,10 +15,10 @@ cd l2-embalagem
 docker compose build
 docker compose up
 ```
-Com isso, o Docker compilará o API e o subirá dentro de um contêiner e também baixará o banco de dados pré-configurado do Docker Hub ([link](https://hub.docker.com/r/marvipi/embalagem-repository-sqlserver "link")). O Swagger poderá então ser acessado pela URL: http://localhost:5233/swagger.
+Com isso, o Docker compilará o API e o subirá dentro de um contêiner e também baixará o banco de dados pré-configurado do Docker Hub ([link](https://hub.docker.com/r/marvipi/embalagem-repository-sqlserver "link")). O Swagger poderá então ser acessado pela URL: http://localhost/swagger.
 
 # API
-A API segue o padrão REST e possui dois endpoints: um que embala produtos e outro que exibe os que já foram processados pelo sistema.
+A API segue o padrão REST e possui dois endpoints para embalagem: um que processa os pedidos e outro que exibe os que já foram processados. 
 ![Swagger](res/api.png)
 
 # Requisitos para entrega
@@ -26,11 +26,11 @@ A API segue o padrão REST e possui dois endpoints: um que embala produtos e out
 2. 🗹 Tanto o serviço como o banco de dados deve rodar via docker;
 3. 🗹 Deve conter REAME.md com os pré-requisitos (provavelmente apenas o docker) e
 comandos necessários para rodar a aplicação, recomendado utilizar o “docker-compose”
-4. ⮽ A API precisa ter swagger e ser possível testar ela a partir do swagger;
+4. 🗹 A API precisa ter swagger e ser possível testar ela a partir do swagger;
 5. 🗹 Enviar o código fonte via link do repositório do github;
 
 # Requisitos opcionais
-1. ☐ Segurança na autenticação da API
+1. 🗹 Segurança na autenticação da API
 2. ☐ Deve conter teste unitário
 
 
