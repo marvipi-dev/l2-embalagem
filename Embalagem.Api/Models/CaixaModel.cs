@@ -1,4 +1,3 @@
-using Embalagem.Api.ExtensionMethods;
 using Embalagem.Api.Views;
 
 namespace Embalagem.Api.Models;
@@ -66,7 +65,7 @@ public class CaixaModel
             PedidoId = pedido.PedidoId,
             Produtos = naoCouberamProdutos
         };
-        if (CabemTodos(naoCouberamPedido.VolumeProdutos()))
+        if (CabemTodos(naoCouberamPedido.Volume))
         {
             embalagens.AddRange(Embalar(naoCouberamPedido));
         }

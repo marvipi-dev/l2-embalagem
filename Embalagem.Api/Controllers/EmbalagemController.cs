@@ -1,5 +1,4 @@
 using Embalagem.Api.Data;
-using Embalagem.Api.ExtensionMethods;
 using Embalagem.Api.Models;
 using Embalagem.Api.Views;
 using Microsoft.AspNetCore.Authorization;
@@ -76,6 +75,11 @@ public class EmbalagemController : ControllerBase
     private IEnumerable<Pedido> FiltrarEmbalaveis(IEnumerable<(int PedidoId, Produto Produto)> naoEmbalaveis,
         IEnumerable<Pedido> pedidos)
     {
+        if (!naoEmbalaveis.Any())
+        {
+            return pedidos;
+        }
+        
         var pedidosFiltrados = new List<Pedido>();
         foreach (var naoEmbalavel in naoEmbalaveis)
         {
@@ -103,7 +107,7 @@ public class EmbalagemController : ControllerBase
             var cabemUnicaCaixa = false;
             foreach (var caixa in caixas)
             {
-                if (cabemUnicaCaixa = caixa.CabemTodos(pedido.VolumeProdutos()))
+                if (cabemUnicaCaixa = caixa.CabemTodos(pedido.Volume))
                 {
                     var pedidoEmbalado = caixa.Embalar(pedido);
                     embalagens.Add(pedidoEmbalado);
