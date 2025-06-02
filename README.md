@@ -5,6 +5,17 @@ Ele é composto por um microserviço que embala produtos na menor quantidade de 
 tamanho. A persistência de dados é feita com o SQL Server.
 Ambos rodam em containers Docker e são executados simultaneamente por meio do Docker Compose.
 
+## Pontos de destaque
+
+- API REST implementado em ASP.NET, C# e .NET 9;
+- Persistência de dados com o SQL Server;
+- Preparação do banco de dados com comandos DDL;
+- Manipulação de dados com o Dapper, functions, procedimentos armazenados e comandos DML;
+- Microserviço e base de dados conteinerizados com o Docker e Docker Compose;
+- Endpoints testáveis através do Swagger;
+- Autenticação por meio de tokens JWT;
+- Testes unitários com o xUnit;
+
 # Como executar
 
 ## Pré-requisitos
