@@ -13,12 +13,12 @@ public class EmbalagemService : IEmbalagemService
         _repository = repository;
     }
 
-    public IEnumerable<RegistroEmbalagem>? BuscarEmbalados()
+    public async Task<IEnumerable<RegistroEmbalagem>?> BuscarEmbaladosAsync()
     {
-        return _repository.LerEmbalagens();
+        return await _repository.LerEmbalagensAsync();
     }
 
-    public IOrderedEnumerable<Views.Embalagem>? Embalar(IEnumerable<Pedido> pedidos)
+    public async Task<IOrderedEnumerable<Views.Embalagem>?> EmbalarAsync(IEnumerable<Pedido> pedidos)
     {
         var embalagens = new List<Views.Embalagem>();
         if (!pedidos.Any())
@@ -26,12 +26,13 @@ public class EmbalagemService : IEmbalagemService
             return embalagens.Order();
         }
         
-        var caixas = _repository.LerCaixas()?.OrderBy(c => c.Dimensoes.Volume);
+        var caixas = await _repository.LerCaixasAsync();
         if (caixas == null)
         {
             return null;
         }
 
+        caixas = caixas.OrderBy(c => c.Dimensoes.Volume);
         var pedidosPorVolume = pedidos.OrderBy(p => p.Volume);
 
         // Separar os pedidos que não cabem em nenhuma caixa.
@@ -205,7 +206,7 @@ public class EmbalagemService : IEmbalagemService
         }
 
         var retorno = embalagensFinal.OrderBy(e => e.PedidoId);
-        var sucesso = _repository.Escrever(retorno);
+        var sucesso = await _repository.EscreverAsync(retorno);
         if (!sucesso.HasValue || !sucesso.Value)
         {
             return null;

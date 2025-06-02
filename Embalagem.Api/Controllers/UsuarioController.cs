@@ -16,9 +16,9 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Registrar([FromBody] Usuario usuario)
+    public async Task<IActionResult> Registrar([FromBody] Usuario usuario)
     {
-        var existe = _repository.Existe(usuario);
+        var existe = await _repository.ExisteAsync(usuario);
         if (existe == null)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable);
@@ -29,7 +29,7 @@ public class UsuarioController : ControllerBase
             return Conflict("Usuario já cadastrado");
         }
 
-        var sucesso = _repository.Escrever(usuario);
+        var sucesso = await _repository.EscreverAsync(usuario);
         if (sucesso == null || !sucesso.Value)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable);

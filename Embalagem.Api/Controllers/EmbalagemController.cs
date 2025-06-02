@@ -18,9 +18,9 @@ public class EmbalagemController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Embalagem()
+    public async Task<IActionResult> Embalagem()
     {
-        var embalados = _embalagemService.BuscarEmbalados();
+        var embalados = await _embalagemService.BuscarEmbaladosAsync();
         if (embalados == null)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable);
@@ -35,10 +35,9 @@ public class EmbalagemController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Embalagem(EmbalagemPostRequest postRequest)
+    public async Task<IActionResult>  Embalagem(EmbalagemPostRequest postRequest)
     {
-        // TODO: tornar assíncrono
-        var embalados = _embalagemService.Embalar(postRequest.Pedidos);
+        var embalados = await _embalagemService.EmbalarAsync(postRequest.Pedidos);
 
         if (embalados == null)
         {

@@ -28,23 +28,23 @@ public class SqlServerDapper : IRepository
         _connectionString = config["ConnectionStrings:Default"];
     }
 
-    public IEnumerable<CaixaModel>? LerCaixas()
+    public async Task<IEnumerable<CaixaModel>?> LerCaixasAsync()
     {
         try
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                return connection.Query(SelectCaixas)
-                    .Select(c => new CaixaModel()
+                var caixas = await connection.QueryAsync(SelectCaixas);
+                return caixas.Select(c => new CaixaModel()
+                {
+                    CaixaId = c.CaixaId,
+                    Dimensoes = new()
                     {
-                        CaixaId = c.CaixaId,
-                        Dimensoes = new()
-                        {
-                            Altura = c.altura,
-                            Largura = c.largura,
-                            Comprimento = c.comprimento
-                        }
-                    });
+                        Altura = c.altura,
+                        Largura = c.largura,
+                        Comprimento = c.comprimento
+                    }
+                });
             }
         }
         catch
@@ -53,7 +53,7 @@ public class SqlServerDapper : IRepository
         }
     }
 
-    public bool? Escrever(IEnumerable<Views.Embalagem> embalagens)
+    public async Task<bool?> EscreverAsync(IEnumerable<Views.Embalagem> embalagens)
     {
         try
         {
@@ -64,7 +64,7 @@ public class SqlServerDapper : IRepository
                 foreach (var caixa in embalagem.Caixas)
                 foreach (var produto in caixa.Produtos)
                 {
-                    linhasEscritas += connection.Execute(InsertEmbalagens,
+                    linhasEscritas += await connection.ExecuteAsync(InsertEmbalagens,
                         new
                         {
                             pedido_id = embalagem.PedidoId,
@@ -82,13 +82,13 @@ public class SqlServerDapper : IRepository
         }
     }
 
-    public IEnumerable<RegistroEmbalagem>? LerEmbalagens()
+    public async Task<IEnumerable<RegistroEmbalagem>?> LerEmbalagensAsync()
     {
         try
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var embalagens = connection.Query(SelectEmbalagens);
+                var embalagens = await connection.QueryAsync(SelectEmbalagens);
                 return embalagens.Select(e => new RegistroEmbalagem
                 {
                     PedidoId = e.pedido_id,
@@ -103,13 +103,13 @@ public class SqlServerDapper : IRepository
         }
     }
 
-    public bool? Existe(Usuario usuario)
+    public async Task<bool?> ExisteAsync(Usuario usuario)
     {
         try
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var resposta = connection.QueryFirstOrDefault<Usuario>(ExisteUsuario, usuario);
+                var resposta = await connection.QueryFirstOrDefaultAsync<Usuario>(ExisteUsuario, usuario);
                 return resposta != null;
             }
         }
@@ -119,13 +119,13 @@ public class SqlServerDapper : IRepository
         }
     }
 
-    public bool? Escrever(Usuario usuario)
+    public async Task<bool?> EscreverAsync(Usuario usuario)
     {
         try
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sucesso = connection.Execute(RegistrarUsuarioProcedure, usuario,
+                var sucesso = await connection.ExecuteAsync(RegistrarUsuarioProcedure, usuario,
                     commandType: CommandType.StoredProcedure);
                 return sucesso == 1;
             }
@@ -136,13 +136,13 @@ public class SqlServerDapper : IRepository
         }
     }
 
-    public bool? Validar(Usuario usuario)
+    public async Task<bool?> ValidarAsync(Usuario usuario)
     {
         try
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sucesso = connection.ExecuteScalar<int>(ValidarUsuario, usuario);
+                var sucesso = await connection.ExecuteScalarAsync<int>(ValidarUsuario, usuario);
                 return sucesso == 1;
             }
         }

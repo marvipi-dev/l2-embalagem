@@ -5,10 +5,10 @@ namespace Embalagem.Api.Data;
 
 public interface IRepository
 {
-    public IEnumerable<CaixaModel>? LerCaixas();
-    public bool? Escrever(IEnumerable<Views.Embalagem> embalagens);
-    public IEnumerable<RegistroEmbalagem>? LerEmbalagens();
-    public bool? Existe(Usuario usuario);
-    public bool? Escrever(Usuario usuario);
-    public bool? Validar(Usuario usuario);
+    public Task<IEnumerable<CaixaModel>?> LerCaixasAsync();
+    public Task<bool?> EscreverAsync(IEnumerable<Views.Embalagem> embalagens);
+    public Task<IEnumerable<RegistroEmbalagem>?> LerEmbalagensAsync();
+    public Task<bool?> ExisteAsync(Usuario usuario);
+    public Task<bool?> EscreverAsync(Usuario usuario);
+    public Task<bool?> ValidarAsync(Usuario usuario);
 }
