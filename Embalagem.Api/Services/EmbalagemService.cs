@@ -54,7 +54,7 @@ public class EmbalagemService : IEmbalagemService
         }).Where(pe => pe.Produtos.Any()); // Pedidos que contém um único produto não embalável ficarão vazios.
 
 
-        // Embalar os pedidos que cabem inteiramente em uma única caixa
+        // Embalar os pedidos que cabem inteiramente em uma única caixa.
         embalagens.AddRange(embalaveisEmUmaCaixa.Select(pe => new Views.Embalagem
         {
             PedidoId = pe.PedidoId,
@@ -103,9 +103,8 @@ public class EmbalagemService : IEmbalagemService
             }
         }
 
-
-        // Preparar os produtos não embalaveis para retorno
-        var naoEmbalados = naoEmbalaveis.Select(pe => new Views.Embalagem()
+        // Preparar os produtos não embalaveis para retorno.
+        embalagens.AddRange(naoEmbalaveis.Select(pe => new Views.Embalagem()
         {
             PedidoId = pe.PedidoId,
             Caixas = new List<CaixaView>
@@ -117,20 +116,17 @@ public class EmbalagemService : IEmbalagemService
                     Observacao = $"Produto não cabe em nenhuma caixa disponível."
                 }
             }
-        });
+        }));
+        
 
-        // Agrupar embalagens por id
-        var embalagensAgrupadas = embalagens.Concat(naoEmbalados)
-            .OrderBy(e => e.PedidoId)
-            .GroupBy(e => (e.PedidoId, e.Caixas));
-
-        var embalagensFinal = new List<Views.Embalagem>();
-        foreach (var grupo in embalagensAgrupadas)
+        // Agrupar embalagens por id.
+        var embalagensAgrupadasPorPedido = new List<Views.Embalagem>();
+        foreach (var grupo in embalagens.GroupBy(e => (e.PedidoId, e.Caixas)))
         {
-            var i = embalagensFinal.FindIndex(e => e.PedidoId == grupo.Key.PedidoId);
+            var i = embalagensAgrupadasPorPedido.FindIndex(e => e.PedidoId == grupo.Key.PedidoId);
             if (i < 0)
             {
-                embalagensFinal.Add(new Views.Embalagem()
+                embalagensAgrupadasPorPedido.Add(new()
                 {
                     PedidoId = grupo.Key.PedidoId,
                     Caixas = grupo.Key.Caixas
@@ -138,11 +134,12 @@ public class EmbalagemService : IEmbalagemService
             }
             else
             {
-                embalagensFinal[i].Caixas = embalagensFinal[i].Caixas.Concat(grupo.Key.Caixas);
+                var embalagemAgrupavel = embalagensAgrupadasPorPedido[i];
+                embalagemAgrupavel.Caixas = embalagemAgrupavel.Caixas.Concat(grupo.Key.Caixas);
             }
         }
 
-        var embalagensOrdenadasPorPedido = embalagensFinal.OrderBy(e => e.PedidoId);
+        var embalagensOrdenadasPorPedido = embalagensAgrupadasPorPedido.OrderBy(e => e.PedidoId);
         var sucesso = await _repository.EscreverAsync(embalagensOrdenadasPorPedido);
         if (!sucesso.HasValue || !sucesso.Value)
         {
