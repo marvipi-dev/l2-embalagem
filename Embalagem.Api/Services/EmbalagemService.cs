@@ -35,90 +35,17 @@ public class EmbalagemService : IEmbalagemService
         caixas = caixas.OrderBy(c => c.Dimensoes.Volume);
         var pedidosPorVolume = pedidos.OrderBy(p => p.Volume);
 
-        // Separar os pedidos que não cabem em nenhuma caixa.
-        var pedidosNaoEmbalaveis = new List<Pedido>();
-        var pedidosEmbalaveis = new List<Pedido>();
-        foreach (var pedido in pedidosPorVolume)
+        // Separar os pedidos não embaláveis
+        var naoEmbalaveisEmUmaCaixa = pedidosPorVolume.Where(p => caixas.All(c => !c.Comporta(p)));
+        var pedidosNaoEmbalaveis = naoEmbalaveisEmUmaCaixa.Select(pe => new Pedido()
         {
-            var produtosNaoEmbalaveis = new List<Produto>();
-            foreach (var produto in pedido.Produtos)
-            {
-                var embalavel = false;
-                foreach (var caixa in caixas)
-                {
-                    if (embalavel = embalavel || caixa.Comporta(produto))
-                    {
-                        break;
-                    }
-                }
-
-                if (!embalavel)
-                {
-                    produtosNaoEmbalaveis.Add(produto);
-                }
-            }
-
-            if (produtosNaoEmbalaveis.Any())
-            {
-                pedidosNaoEmbalaveis.Add(new()
-                {
-                    PedidoId = pedido.PedidoId,
-                    Produtos = produtosNaoEmbalaveis
-                });
-            }
-
-            var produtosEmbalaveis = pedido.Produtos
-                .Except(produtosNaoEmbalaveis)
-                .Where(p => p.ProdutoId != string.Empty);
-
-            if (produtosEmbalaveis.Any())
-            {
-                pedidosEmbalaveis.Add(new()
-                {
-                    PedidoId = pedido.PedidoId,
-                    Produtos = produtosEmbalaveis
-                });
-            }
-        }
-
-        // Preparar os não embalaveis para retorno
-        var naoEmbalados = new List<Views.Embalagem>();
-        foreach (var pedidoNaoEmbalavel in pedidosNaoEmbalaveis)
-        {
-            var produtoIds = pedidoNaoEmbalavel.Produtos.Select(p => p.ProdutoId);
-            var msg = produtoIds.Count() > 1 ? "Produtos" : "Produto";
-            naoEmbalados.Add(new Views.Embalagem
-            {
-                PedidoId = pedidoNaoEmbalavel.PedidoId,
-                Caixas = new List<CaixaView>
-                {
-                    new()
-                    {
-                        CaixaId = null,
-                        Produtos = produtoIds,
-                        Observacao = $"{msg} não cabe em nenhuma caixa disponível."
-                    }
-                }
-            });
-        }
-
-        // Separar os pedidos que cabem inteiramente em uma única caixa
-        var embalavelEmUma = new List<Pedido>();
-        var embalavelEmVarias = new List<Pedido>();
-        foreach (var pedido in pedidosEmbalaveis)
-        {
-            foreach (var caixa in caixas)
-            {
-                if (caixa.Comporta(pedido))
-                {
-                    embalavelEmUma.Add(pedido);
-                    break;
-                }
-            }
-        }
+            PedidoId = pe.PedidoId,
+            Produtos = pe.Produtos.Where(p => caixas.All(c => !c.Comporta(p)))
+        }).Where(pe => pe.Produtos.Any()); // Pedidos que contém um único produto não embalável ficarão vazios.
 
         // Embalar os pedidos que cabem inteiramente em uma única caixa
-        foreach (var pedido in embalavelEmUma)
+        var embalaveisEmUmaCaixa = pedidosPorVolume.Except(naoEmbalaveisEmUmaCaixa);
+        foreach (var pedido in embalaveisEmUmaCaixa)
         {
             foreach (var caixa in caixas)
             {
@@ -134,9 +61,15 @@ public class EmbalagemService : IEmbalagemService
                 }
             }
         }
-
-        // Embalar os pedidos que não cabem inteiramente em uma única caixa
-        embalavelEmVarias = pedidosEmbalaveis.Except(embalavelEmUma).ToList();
+        
+        // Remover produtos não embalaveis dos pedidos.        
+        var embalavelEmVarias = naoEmbalaveisEmUmaCaixa.Select(pe => new Pedido()
+            {
+                PedidoId = pe.PedidoId,
+                Produtos = pe.Produtos.Where(p => caixas.Any(c => c.Comporta(p)))
+            }).Where(pe => pe.Produtos.Any()) // Pedidos que contém um único produto não embalável ficarão vazios.
+            .ToList();
+        // Embalar os pedidos que não cabem inteiramente em uma única caixa.
         while (embalavelEmVarias.Any())
         {
             var embalar = new List<Pedido>(embalavelEmVarias);
@@ -180,10 +113,25 @@ public class EmbalagemService : IEmbalagemService
                 }
             }
         }
+        
+
+        // Preparar os produtos não embalaveis para retorno
+        var naoEmbalados = pedidosNaoEmbalaveis.Select(pe => new Views.Embalagem()
+        {
+            PedidoId = pe.PedidoId,
+            Caixas = new List<CaixaView>
+            {
+                new()
+                {
+                    CaixaId = null,
+                    Produtos = pe.Produtos.Select(p => p.ProdutoId),
+                    Observacao = $"Produto não cabe em nenhuma caixa disponível."
+                }
+            }
+        });
 
         // Agrupar embalagens por id
-        var embalagensAgrupadas = embalagens
-            .Concat(naoEmbalados)
+        var embalagensAgrupadas = embalagens.Concat(naoEmbalados)
             .OrderBy(e => e.PedidoId)
             .GroupBy(e => (e.PedidoId, e.Caixas));
 
@@ -205,13 +153,13 @@ public class EmbalagemService : IEmbalagemService
             }
         }
 
-        var retorno = embalagensFinal.OrderBy(e => e.PedidoId);
-        var sucesso = await _repository.EscreverAsync(retorno);
+        var embalagensOrdenadasPorPedido = embalagensFinal.OrderBy(e => e.PedidoId);
+        var sucesso = await _repository.EscreverAsync(embalagensOrdenadasPorPedido);
         if (!sucesso.HasValue || !sucesso.Value)
         {
             return null;
         }
         
-        return retorno;
+        return embalagensOrdenadasPorPedido;
     }
 }
