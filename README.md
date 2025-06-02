@@ -21,21 +21,24 @@ Microserviço que embala produtos na menor quantidade de caixas possível, prior
 
 ### Instruções
 
-Assegure que o Docker está rodando e execute os seguintes comandos sequencialmente: 
-
-Clone o repositório do projeto:
+Assegure que o Docker está rodando e siga os seguintes passos: 
+1. Clone o repositório do projeto:
 ```bash
 git clone https://github.com/marvipi-dev/l2-embalagem.git
 ```
-Entre na pasta raiz do projeto (onde se encontra o arquivo compose.yml):
+2. Entre na pasta raiz do projeto (onde se encontra o arquivo compose.yml):
 ```bash
 cd l2-embalagem
 ```
-Compile o projeto com o Docker Compose:
+3. Mude para o branch dev:
+```bash
+git switch dev
+```
+4. Compile o projeto com o Docker Compose:
 ```bash
 docker compose build
 ```
-Rode o projeto com o Docker Compose:
+5. Rode o projeto com o Docker Compose:
 ```bash
 docker compose up
 ```
