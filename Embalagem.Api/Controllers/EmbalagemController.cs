@@ -29,30 +29,15 @@ public class EmbalagemController : ControllerBase
     [HttpPost]
     public EmbalagemPostResponse Embalagem(EmbalagemPostRequest postRequest)
     {
-        // Dar preferência às caixas de menor volume
-        var caixas = _repository.LerCaixas().OrderBy(c => c.Volume);
-        var pedidos = postRequest.Pedidos;
-
-        var naoEmbalaveis = _embalagemService.IdentificarNaoEmbalaveis(pedidos, caixas);
-        var pedidosFiltrados = _embalagemService.FiltrarEmbalaveis(naoEmbalaveis, pedidos);
-
-        var embalagens = _embalagemService.EmbalagemUnica(pedidosFiltrados, caixas);
-        var embaladosUmaCaixa = embalagens.embalados;
-        var pedidosVariasCaixas = embalagens.embalarEmVarias;
-
-        var embaladosVariasCaixas = _embalagemService.EmbalarVariasCaixas(pedidosVariasCaixas, caixas);
-
-        var naoEmbalaveisRetorno = _embalagemService.PrepararNaoEmbalaveis(naoEmbalaveis);
-
-        var embalagemPostResponse = new EmbalagemPostResponse
+        // TODO: tratamento de erros
+        // TODO: validar request
+        // TODO: validar embalados
+        // TODO: tornar assíncrono
+        var embalados = _embalagemService.Embalar(postRequest.Pedidos);
+        var response = new EmbalagemPostResponse()
         {
-            Pedidos = naoEmbalaveisRetorno
-                .Concat(embaladosVariasCaixas)
-                .Concat(embaladosUmaCaixa)
+            Pedidos = embalados
         };
-
-        _repository.Escrever(embalagemPostResponse.Pedidos);
-
-        return embalagemPostResponse;
+        return response;
     }
 }

@@ -1,97 +1,78 @@
+using System.Collections.Immutable;
 using Embalagem.Api.Views;
 
 namespace Embalagem.Api.Models;
 
-public class CaixaModel
+public class CaixaModel // TODO: generalizar Altura, Largura, Comprimento e Volume
 {
-    public string CaixaId { get; set; }
+    public required string CaixaId { get; set; }
     public int Altura { get; set; }
     public int Largura { get; set; }
     public int Comprimento { get; set; }
     public int Volume => Altura * Largura * Comprimento;
 
-    public bool CabemTodos(int volumeProduto)
+    /// <summary>
+    /// Verifica se um produto cabe dentro da caixa.
+    /// </summary>
+    /// <param name="produto">O <see cref="Produto"/> para verificar.</param>
+    /// <returns>true se o produto cabe dentro da caixa, senão false.</returns>
+    public bool Comporta(Produto produto)
     {
-        return volumeProduto <= Volume;
+        return produto.Dimensoes < new Dimensoes() { Altura = Altura, Largura = Largura, Comprimento = Comprimento};
+    }
+    
+    /// <summary>
+    /// Verifica se todos os produtos de um único pedido cabem dentro da caixa.
+    /// </summary>
+    /// <param name="pedido">Um <see cref="Pedido"/> que contém uma quantidade arbitrária de produtos.</param>
+    /// <returns>true se todos os produtos cabem dentro da caixa, senão false.</returns>
+    public bool Comporta(Pedido pedido)
+    {
+        var dimensoesPedido = Medir(pedido);
+
+        return dimensoesPedido < new Dimensoes() { Altura = Altura, Largura = Largura, Comprimento = Comprimento};
     }
 
-    public bool CabeDentro(Produto produto)
+    /// <summary>
+    /// Verifica se todos os produtos de uma sequência de pedidos cabem dentro da caixa.
+    /// </summary>
+    /// <param name="pedidos">A sequência de <see cref="Pedido"/> para verificar.</param>
+    /// <returns>true se todos os produtos de todos os pedidos cabem dentro da caixa, senão false.</returns>
+    public bool Comporta(IEnumerable<Pedido> pedidos)
     {
-        return produto.Dimensoes.Volume <= Volume;
-    }
+        var dimensaoTotal = pedidos.
+            Select(Medir)
+            .Aggregate(new Dimensoes(), (d, next) => d + next);
 
-    public Views.Embalagem Embalar(Pedido pedido)
+        return dimensaoTotal < new Dimensoes() { Altura = Altura, Largura = Largura, Comprimento = Comprimento};
+    }
+    
+    private static Dimensoes Medir(Pedido pedido)
     {
-        return new Views.Embalagem
+        var dimensoesPedido = pedido.Produtos
+            .Select(p => p.Dimensoes)
+            .Aggregate(new Dimensoes(), (d, next) => d + next);
+        
+        return new()
         {
-            PedidoId = pedido.PedidoId,
-            Caixas = new List<CaixaProdutos>
-            {
-                new()
-                {
-                    CaixaId = CaixaId,
-                    Produtos = pedido.Produtos.Select(p => p.ProdutoId)
-                }
-            }
+            Altura = dimensoesPedido.Altura,
+            Largura = dimensoesPedido.Largura,
+            Comprimento = dimensoesPedido.Comprimento
         };
     }
-
-    public (IEnumerable<Views.Embalagem> embalagens, IEnumerable<Produto> incabiveis) EmbalarParcialmente(Pedido pedido)
+    
+    /// <summary>
+    /// Embala todos os produtos dentro da caixa.
+    /// </summary>
+    /// <param name="produtos">A sequência de <see cref="Produto"/> para embalar.</param>
+    /// <returns>Um <see cref="CaixaView"/> que contém todos os produtos e o id da caixa.</returns>
+    /// <remarks>Pressupõe que a caixa é grande o suficiente para armazenar todos os produtos.</remarks>
+    public CaixaView Embalar(IEnumerable<Produto> produtos)
     {
-        var embalagens = new List<Views.Embalagem>();
-        var incabiveis = new List<Produto>();
-        var produtos = pedido.Produtos.OrderBy(p => p.Dimensoes.Volume);
-
-        var qntsCabem = QuantosCabem(produtos);
-
-
-        var embalaveis = new Pedido
+        return new CaixaView()
         {
-            PedidoId = pedido.PedidoId,
-            Produtos = produtos.Take(qntsCabem)
+            CaixaId = CaixaId,
+            Produtos = produtos.Select(p => p.ProdutoId)
         };
-        var embalados = Embalar(embalaveis);
-        embalagens.AddRange(embalados);
-
-
-        var naoCouberamProdutos = produtos.Skip(qntsCabem);
-        if (!naoCouberamProdutos.Any())
-        {
-            return (embalagens, incabiveis);
-        }
-
-        var naoCouberamPedido = new Pedido
-        {
-            PedidoId = pedido.PedidoId,
-            Produtos = naoCouberamProdutos
-        };
-        if (CabemTodos(naoCouberamPedido.Volume))
-        {
-            embalagens.AddRange(Embalar(naoCouberamPedido));
-        }
-        else
-        {
-            incabiveis.AddRange(naoCouberamProdutos);
-        }
-
-        return (embalagens, incabiveis);
-    }
-
-    private int QuantosCabem(IOrderedEnumerable<Produto> produtos)
-    {
-        var somaVolume = 0;
-        var qntsCabem = 0;
-        foreach (var produto in produtos)
-        {
-            if (somaVolume + produto.Dimensoes.Volume > Volume)
-            {
-                break;
-            }
-
-            somaVolume += produto.Dimensoes.Volume;
-            qntsCabem++;
-        }
-
-        return qntsCabem;
     }
 }

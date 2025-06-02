@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Embalagem.Api.Views;
 
-public class CaixaProdutos
+public class CaixaView
 {
     [JsonPropertyName("caixa_id")] public string? CaixaId { get; set; }
 

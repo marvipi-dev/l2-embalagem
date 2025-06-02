@@ -29,8 +29,9 @@ ser acessado pela URL: http://localhost/swagger.
 
 # API
 
-A API segue o padrão REST e possui dois endpoints para embalagem: um que processa os pedidos e outro que exibe os que já
-foram processados.
+A API segue o padrão REST e possui dois endpoints para embalagem, um que processa os pedidos e outro que exibe os já
+processados, aceitando somente requisições de usuários autenticados. Há também um para a criação de usuário e outro para autenticação, 
+e ambos são acessados sem credenciais.
 ![Swagger](res/api.png)
 
 # Requisitos para entrega
@@ -45,6 +46,6 @@ foram processados.
 # Requisitos opcionais
 
 1. 🗹 Segurança na autenticação da API
-2. ☐ Deve conter teste unitário
+2. 🗹 Deve conter teste unitário
 
 

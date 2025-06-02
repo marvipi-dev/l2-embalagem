@@ -6,5 +6,5 @@ public class Embalagem
 {
     [JsonPropertyName("pedido_id")] public int PedidoId { get; set; }
 
-    public IEnumerable<CaixaProdutos> Caixas { get; set; }
+    public IEnumerable<CaixaView> Caixas { get; set; }
 }

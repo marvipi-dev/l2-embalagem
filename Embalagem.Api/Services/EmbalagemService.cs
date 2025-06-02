@@ -1,124 +1,196 @@
-using Embalagem.Api.Models;
+using Embalagem.Api.Data;
 using Embalagem.Api.Views;
-using Pedido = Embalagem.Api.Views.Pedido;
 
 namespace Embalagem.Api.Services;
 
 public class EmbalagemService : IEmbalagemService
 {
-    public List<(int PedidoId, Produto Produto)> IdentificarNaoEmbalaveis(IEnumerable<Pedido> pedidos,
-        IOrderedEnumerable<CaixaModel> caixas)
+    private readonly IRepository _repository;
+
+    public EmbalagemService(IRepository repository)
     {
-        var naoEmbalaveis = new List<(int PedidoId, Views.Produto Produto)>();
-
-        var volumeMaiorCaixa = caixas.Last().Volume;
-        foreach (var pedido in pedidos)
-        foreach (var produto in pedido.Produtos)
-        {
-            if (produto.Dimensoes.Volume > volumeMaiorCaixa)
-            {
-                naoEmbalaveis.Add((pedido.PedidoId, produto));
-            }
-        }
-
-        return naoEmbalaveis;
+        _repository = repository;
     }
 
-    public IEnumerable<Pedido> FiltrarEmbalaveis(IEnumerable<(int PedidoId, Produto Produto)> naoEmbalaveis,
-        IEnumerable<Pedido> pedidos)
-    {
-        if (!naoEmbalaveis.Any())
-        {
-            return pedidos;
-        }
-        
-        var pedidosFiltrados = new List<Pedido>();
-        foreach (var naoEmbalavel in naoEmbalaveis)
-        {
-            pedidosFiltrados = pedidos.Select(pe => new Pedido
-            {
-                PedidoId = pe.PedidoId,
-                Produtos = pe.PedidoId == naoEmbalavel.PedidoId
-                    ? pe.Produtos.Where(p => !p.Equals(naoEmbalavel.Produto))
-                    : pe.Produtos
-            }).ToList();
-        }
-
-        pedidosFiltrados.RemoveAll(pe => !pe.Produtos.Any());
-        return pedidosFiltrados;
-    }
-
-    public (IEnumerable<Views.Embalagem> embalados, IEnumerable<Pedido> embalarEmVarias) EmbalagemUnica(
-        IEnumerable<Pedido> pedidos, IEnumerable<CaixaModel> caixas)
+    public IOrderedEnumerable<Views.Embalagem> Embalar(IEnumerable<Pedido> pedidos)
     {
         var embalagens = new List<Views.Embalagem>();
-        var embalarEmVarias = new List<Pedido>();
+        var caixas = _repository.LerCaixas().OrderBy(c => c.Volume);
+        var pedidosPorVolume = pedidos.OrderBy(p => p.Volume);
 
-        foreach (var pedido in pedidos)
+        // Separar os pedidos que não cabem em nenhuma caixa.
+        var pedidosNaoEmbalaveis = new List<Pedido>();
+        var pedidosEmbalaveis = new List<Pedido>();
+        foreach (var pedido in pedidosPorVolume)
         {
-            var cabemUnicaCaixa = false;
-            foreach (var caixa in caixas)
+            var produtosNaoEmbalaveis = new List<Produto>();
+            foreach (var produto in pedido.Produtos)
             {
-                if (cabemUnicaCaixa = caixa.CabemTodos(pedido.Volume))
+                var embalavel = false;
+                foreach (var caixa in caixas)
                 {
-                    var pedidoEmbalado = caixa.Embalar(pedido);
-                    embalagens.Add(pedidoEmbalado);
-                    break;
-                }
-            }
-
-            if (!cabemUnicaCaixa)
-            {
-                embalarEmVarias.Add(pedido);
-            }
-        }
-
-        return (embalagens, embalarEmVarias);
-    }
-
-    public List<Views.Embalagem> EmbalarVariasCaixas(IEnumerable<Pedido> pedidosVariasCaixas,
-        IOrderedEnumerable<CaixaModel> caixas)
-    {
-        var embaladosVariasCaixas = new List<Views.Embalagem>();
-        foreach (var pedido in pedidosVariasCaixas)
-        {
-            var naoEmbalados = new List<Views.Produto>();
-
-            foreach (var caixa in caixas)
-            {
-                var embalagem = caixa.EmbalarParcialmente(pedido);
-                embaladosVariasCaixas.AddRange(embalagem.embalagens);
-                if (!embalagem.incabiveis.Any())
-                {
-                    break;
-                }
-
-                naoEmbalados.AddRange(embalagem.incabiveis);
-            }
-        }
-
-        return embaladosVariasCaixas;
-    }
-
-    public IEnumerable<Views.Embalagem> PrepararNaoEmbalaveis(
-        IEnumerable<(int PedidoId, Views.Produto Produto)> naoEmbalaveis)
-    {
-        var naoEmbalaveisRetorno = naoEmbalaveis.Select(ne => new Views.Embalagem
-        {
-            PedidoId = ne.PedidoId,
-            Caixas = new List<CaixaProdutos>
-            {
-                new()
-                {
-                    CaixaId = null,
-                    Produtos = new List<string>
+                    if (embalavel = embalavel || caixa.Comporta(produto))
                     {
-                        ne.Produto.ProdutoId
-                    },
-                    Observacao = "Produto não cabe em nenhuma caixa disponível."
+                        break;
+                    }
+                }
+
+                if (!embalavel)
+                {
+                    produtosNaoEmbalaveis.Add(produto);
                 }
             }
-        });
-        return naoEmbalaveisRetorno;
+
+            if (produtosNaoEmbalaveis.Any())
+            {
+                pedidosNaoEmbalaveis.Add(new()
+                {
+                    PedidoId = pedido.PedidoId,
+                    Produtos = produtosNaoEmbalaveis
+                });
+            }
+
+            var produtosEmbalaveis = pedido.Produtos
+                .Except(produtosNaoEmbalaveis)
+                .Where(p => p.ProdutoId != string.Empty);
+
+            if (produtosEmbalaveis.Any())
+            {
+                pedidosEmbalaveis.Add(new()
+                {
+                    PedidoId = pedido.PedidoId,
+                    Produtos = produtosEmbalaveis
+                });
+            }
+        }
+
+        // Preparar os não embalaveis para retorno
+        var naoEmbalados = new List<Views.Embalagem>();
+        foreach (var pedidoNaoEmbalavel in pedidosNaoEmbalaveis)
+        {
+            var produtoIds = pedidoNaoEmbalavel.Produtos.Select(p => p.ProdutoId);
+            var msg = produtoIds.Count() > 1 ? "Produtos" : "Produto";
+            naoEmbalados.Add(new Views.Embalagem
+            {
+                PedidoId = pedidoNaoEmbalavel.PedidoId,
+                Caixas = new List<CaixaView>
+                {
+                    new()
+                    {
+                        CaixaId = null,
+                        Produtos = produtoIds,
+                        Observacao = $"{msg} não cabe em nenhuma caixa disponível."
+                    }
+                }
+            });
+        }
+
+        // Separar os pedidos que cabem inteiramente em uma única caixa
+        var embalavelEmUma = new List<Pedido>();
+        var embalavelEmVarias = new List<Pedido>();
+        foreach (var pedido in pedidosEmbalaveis)
+        {
+            foreach (var caixa in caixas)
+            {
+                if (caixa.Comporta(pedido))
+                {
+                    embalavelEmUma.Add(pedido);
+                    break;
+                }
+            }
+        }
+
+        // Embalar os pedidos que cabem inteiramente em uma única caixa
+        foreach (var pedido in embalavelEmUma)
+        {
+            foreach (var caixa in caixas)
+            {
+                if (caixa.Comporta(pedido))
+                {
+                    var caixaView = caixa.Embalar(pedido.Produtos);
+                    embalagens.Add(new()
+                    {
+                        PedidoId = pedido.PedidoId,
+                        Caixas = new List<CaixaView> { caixaView }
+                    });
+                    break;
+                }
+            }
+        }
+
+        // Embalar os pedidos que não cabem inteiramente em uma única caixa
+        embalavelEmVarias = pedidosEmbalaveis.Except(embalavelEmUma).ToList();
+        while (embalavelEmVarias.Any())
+        {
+            var embalar = new List<Pedido>(embalavelEmVarias);
+
+            foreach (var caixa in caixas)
+            {
+                foreach (var pedido in embalar)
+                {
+                    var qtdEmbalaveis = pedido.Produtos.Count(caixa.Comporta);
+
+                    var couberam = pedido.Produtos.Take(qtdEmbalaveis);
+                    var naoCouberam = pedido.Produtos.Skip(qtdEmbalaveis);
+
+                    if (couberam.Any())
+                    {
+                        var caixaView = new CaixaView()
+                        {
+                            CaixaId = caixa.CaixaId,
+                            Produtos = couberam.Select(p => p.ProdutoId)
+                        };
+
+                        embalagens.Add(new()
+                        {
+                            PedidoId = pedido.PedidoId,
+                            Caixas = new List<CaixaView> { caixaView },
+                        });
+                    }
+
+                    embalavelEmVarias.Remove(pedido);
+                    if (naoCouberam.Any())
+                    {
+                        var embalarNaProxima = new Pedido()
+                        {
+                            PedidoId = pedido.PedidoId,
+                            Produtos = naoCouberam
+                        };
+                        embalavelEmVarias.Insert(0, embalarNaProxima);
+                    }
+                    
+                    embalar = new List<Pedido>(embalavelEmVarias);
+                }
+            }
+        }
+
+        // Agrupar embalagens por id
+        var embalagensAgrupadas = embalagens
+            .Concat(naoEmbalados)
+            .OrderBy(e => e.PedidoId)
+            .GroupBy(e => (e.PedidoId, e.Caixas)); // TODO: AGRUPAR EMBALAGENS POR ID
+
+        var embalagensFinal = new List<Views.Embalagem>();
+        foreach (var grupo in embalagensAgrupadas)
+        {
+            var i = embalagensFinal.FindIndex(e => e.PedidoId == grupo.Key.PedidoId);
+            if (i < 0)
+            {
+                embalagensFinal.Add(new Views.Embalagem()
+                {
+                    PedidoId = grupo.Key.PedidoId,
+                    Caixas = grupo.Key.Caixas
+                });
+            }
+            else
+            {
+                embalagensFinal[i].Caixas = embalagensFinal[i].Caixas.Concat(grupo.Key.Caixas);
+            }
+        }
+
+        var retorno = embalagensFinal.OrderBy(e => e.PedidoId);
+        _repository.Escrever(retorno); // TODO retornar algo quando o banco de dados não conseguir escrever
+        
+        return retorno;
     }
 }
