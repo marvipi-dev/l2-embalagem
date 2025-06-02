@@ -20,13 +20,18 @@ public class EmbalagemService : IEmbalagemService
 
     public IOrderedEnumerable<Views.Embalagem>? Embalar(IEnumerable<Pedido> pedidos)
     {
+        var embalagens = new List<Views.Embalagem>();
+        if (!pedidos.Any())
+        {
+            return embalagens.Order();
+        }
+        
         var caixas = _repository.LerCaixas()?.OrderBy(c => c.Volume);
         if (caixas == null)
         {
             return null;
         }
 
-        var embalagens = new List<Views.Embalagem>();
         var pedidosPorVolume = pedidos.OrderBy(p => p.Volume);
 
         // Separar os pedidos que não cabem em nenhuma caixa.

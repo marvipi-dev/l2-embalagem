@@ -42,7 +42,7 @@ public class CaixaModel // TODO: generalizar Altura, Largura, Comprimento e Volu
     {
         var dimensaoTotal = pedidos.
             Select(Medir)
-            .Aggregate(new Dimensoes(), (d, next) => d + next);
+            .Aggregate(new Dimensoes() {Altura = 0, Largura = 0, Comprimento = 0}, (d, next) => d + next);
 
         return dimensaoTotal < new Dimensoes() { Altura = Altura, Largura = Largura, Comprimento = Comprimento};
     }
@@ -51,7 +51,7 @@ public class CaixaModel // TODO: generalizar Altura, Largura, Comprimento e Volu
     {
         var dimensoesPedido = pedido.Produtos
             .Select(p => p.Dimensoes)
-            .Aggregate(new Dimensoes(), (d, next) => d + next);
+            .Aggregate(new Dimensoes() {Altura = 0, Largura = 0, Comprimento = 0}, (d, next) => d + next);
         
         return new()
         {

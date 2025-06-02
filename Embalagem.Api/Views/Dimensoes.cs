@@ -2,9 +2,9 @@ namespace Embalagem.Api.Views;
 
 public class Dimensoes
 {
-    public int Altura { get; set; }
-    public int Largura { get; set; }
-    public int Comprimento { get; set; }
+    public required int Altura { get; set; }
+    public required int Largura { get; set; }
+    public required int Comprimento { get; set; }
     public int Volume => Altura * Largura * Comprimento;
 
     protected bool Equals(Dimensoes other)

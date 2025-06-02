@@ -4,9 +4,9 @@ namespace Embalagem.Api.Views;
 
 public class Produto
 {
-    [JsonPropertyName("produto_id")] public string ProdutoId { get; set; }
+    [JsonPropertyName("produto_id")] public required string ProdutoId { get; set; }
 
-    public Dimensoes Dimensoes { get; set; }
+    public required Dimensoes Dimensoes { get; set; }
 
     protected bool Equals(Produto other)
     {

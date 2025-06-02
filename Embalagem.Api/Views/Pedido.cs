@@ -4,9 +4,9 @@ namespace Embalagem.Api.Views;
 
 public class Pedido
 {
-    [JsonPropertyName("pedido_id")] public int PedidoId { get; set; }
+    [JsonPropertyName("pedido_id")] public required int PedidoId { get; set; }
 
-    public IEnumerable<Produto> Produtos { get; set; }
+    public required IEnumerable<Produto> Produtos { get; set; }
 
     [JsonIgnore]
     public int Volume => Produtos.Select(p => p.Dimensoes.Volume).Sum();
