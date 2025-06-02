@@ -32,6 +32,6 @@ public class AutenticacaoController : ControllerBase
             return Ok(_autenticacaoService.GerarToken());
         }
 
-        return Unauthorized();
+        return Unauthorized("Usuario não cadastrado.");
     }
 }
