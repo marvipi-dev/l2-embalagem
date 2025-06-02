@@ -25,7 +25,7 @@ public class EmbalagemService : IEmbalagemService
         {
             return embalagens.Order();
         }
-        
+
         var caixas = await _repository.LerCaixasAsync();
         if (caixas == null)
         {
@@ -35,48 +35,38 @@ public class EmbalagemService : IEmbalagemService
         caixas = caixas.OrderBy(c => c.Dimensoes.Volume);
         var pedidosPorVolume = pedidos.OrderBy(p => p.Volume);
 
-        // Separar os pedidos não embaláveis
+        // Separar e classificar os pedidos.
         var naoEmbalaveisEmUmaCaixa = pedidosPorVolume.Where(p => caixas.All(c => !c.Comporta(p)));
-        var pedidosNaoEmbalaveis = naoEmbalaveisEmUmaCaixa.Select(pe => new Pedido()
-        {
-            PedidoId = pe.PedidoId,
-            Produtos = pe.Produtos.Where(p => caixas.All(c => !c.Comporta(p)))
-        }).Where(pe => pe.Produtos.Any()); // Pedidos que contém um único produto não embalável ficarão vazios.
 
-        // Embalar os pedidos que cabem inteiramente em uma única caixa
         var embalaveisEmUmaCaixa = pedidosPorVolume.Except(naoEmbalaveisEmUmaCaixa);
-        foreach (var pedido in embalaveisEmUmaCaixa)
-        {
-            foreach (var caixa in caixas)
-            {
-                if (caixa.Comporta(pedido))
-                {
-                    var caixaView = caixa.Embalar(pedido.Produtos);
-                    embalagens.Add(new()
-                    {
-                        PedidoId = pedido.PedidoId,
-                        Caixas = new List<CaixaView> { caixaView }
-                    });
-                    break;
-                }
-            }
-        }
-        
-        // Remover produtos não embalaveis dos pedidos.        
-        var embalavelEmVarias = naoEmbalaveisEmUmaCaixa.Select(pe => new Pedido()
+
+        var embalavelEmVariasCaixas = naoEmbalaveisEmUmaCaixa.Select(pe => new Pedido()
             {
                 PedidoId = pe.PedidoId,
                 Produtos = pe.Produtos.Where(p => caixas.Any(c => c.Comporta(p)))
             }).Where(pe => pe.Produtos.Any()) // Pedidos que contém um único produto não embalável ficarão vazios.
             .ToList();
-        // Embalar os pedidos que não cabem inteiramente em uma única caixa.
-        while (embalavelEmVarias.Any())
-        {
-            var embalar = new List<Pedido>(embalavelEmVarias);
 
+        var naoEmbalaveis = naoEmbalaveisEmUmaCaixa.Select(pe => new Pedido()
+        {
+            PedidoId = pe.PedidoId,
+            Produtos = pe.Produtos.Where(p => caixas.All(c => !c.Comporta(p)))
+        }).Where(pe => pe.Produtos.Any()); // Pedidos que contém um único produto não embalável ficarão vazios.
+
+
+        // Embalar os pedidos que cabem inteiramente em uma única caixa
+        embalagens.AddRange(embalaveisEmUmaCaixa.Select(pe => new Views.Embalagem
+        {
+            PedidoId = pe.PedidoId,
+            Caixas = new List<CaixaView> { caixas.First(c => c.Comporta(pe)).Embalar(pe.Produtos) }
+        }));
+
+        // Embalar os pedidos que não cabem inteiramente em uma única caixa.
+        while (embalavelEmVariasCaixas.Any())
+        {
             foreach (var caixa in caixas)
             {
-                foreach (var pedido in embalar)
+                foreach (var pedido in new List<Pedido>(embalavelEmVariasCaixas))
                 {
                     var qtdEmbalaveis = pedido.Produtos.Count(caixa.Comporta);
 
@@ -85,38 +75,37 @@ public class EmbalagemService : IEmbalagemService
 
                     if (couberam.Any())
                     {
-                        var caixaView = new CaixaView()
-                        {
-                            CaixaId = caixa.CaixaId,
-                            Produtos = couberam.Select(p => p.ProdutoId)
-                        };
-
                         embalagens.Add(new()
                         {
                             PedidoId = pedido.PedidoId,
-                            Caixas = new List<CaixaView> { caixaView },
+                            Caixas = new List<CaixaView>
+                            {
+                                new()
+                                {
+                                    CaixaId = caixa.CaixaId,
+                                    Produtos = couberam.Select(p => p.ProdutoId)
+                                }
+                            },
                         });
                     }
 
-                    embalavelEmVarias.Remove(pedido);
                     if (naoCouberam.Any())
                     {
-                        var embalarNaProxima = new Pedido()
+                        embalavelEmVariasCaixas.Add(new()
                         {
                             PedidoId = pedido.PedidoId,
                             Produtos = naoCouberam
-                        };
-                        embalavelEmVarias.Insert(0, embalarNaProxima);
+                        });
                     }
                     
-                    embalar = new List<Pedido>(embalavelEmVarias);
+                    embalavelEmVariasCaixas.Remove(pedido);
                 }
             }
         }
-        
+
 
         // Preparar os produtos não embalaveis para retorno
-        var naoEmbalados = pedidosNaoEmbalaveis.Select(pe => new Views.Embalagem()
+        var naoEmbalados = naoEmbalaveis.Select(pe => new Views.Embalagem()
         {
             PedidoId = pe.PedidoId,
             Caixas = new List<CaixaView>
@@ -159,7 +148,7 @@ public class EmbalagemService : IEmbalagemService
         {
             return null;
         }
-        
+
         return embalagensOrdenadasPorPedido;
     }
 }
