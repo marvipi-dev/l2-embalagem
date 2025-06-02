@@ -3,6 +3,9 @@ Sistema de embalagem de produtos criado para um teste técnico da empresa [L2](h
 Ele é composto por um microserviço que embala produtos na menor quantidade de caixas possível, priorizando as de menor tamanho. A persistência de dados é feita com o SQL Server.
 Ambos rodam em containers Docker e são executados simultaneamente por meio do Docker Compose.
 
+
+Para ver a continuação deste projeto, acesse o [branch dev](https://github.com/marvipi-dev/l2-embalagem/tree/dev) do repositório. Ele contém diversas melhorias que não puderam ser implementadas a tempo de entrega, incluindo autenticação e testes unitários.
+
 # Como executar
 ## Pré-requisitos
 - Docker Desktop configurado para usar no mínimo 2GB de RAM;
