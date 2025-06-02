@@ -184,7 +184,7 @@ public class EmbalagemService : IEmbalagemService
         var embalagensAgrupadas = embalagens
             .Concat(naoEmbalados)
             .OrderBy(e => e.PedidoId)
-            .GroupBy(e => (e.PedidoId, e.Caixas)); // TODO: AGRUPAR EMBALAGENS POR ID
+            .GroupBy(e => (e.PedidoId, e.Caixas));
 
         var embalagensFinal = new List<Views.Embalagem>();
         foreach (var grupo in embalagensAgrupadas)

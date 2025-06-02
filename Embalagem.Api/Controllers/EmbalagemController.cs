@@ -37,7 +37,6 @@ public class EmbalagemController : ControllerBase
     [HttpPost]
     public IActionResult Embalagem(EmbalagemPostRequest postRequest)
     {
-        // TODO: validar request
         // TODO: tornar assíncrono
         var embalados = _embalagemService.Embalar(postRequest.Pedidos);
 
