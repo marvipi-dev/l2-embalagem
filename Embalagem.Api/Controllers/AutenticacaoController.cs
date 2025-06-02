@@ -21,7 +21,13 @@ public class AutenticacaoController : ControllerBase
     [HttpPost]
     public IActionResult GerarToken([FromBody] Usuario usuario)
     {
-        if (_repository.Validar(usuario))
+        var valido = _repository.Validar(usuario);
+        if (valido == null)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable);
+        }
+        
+        if (valido.Value)
         {
             return Ok(_autenticacaoService.GerarToken());
         }

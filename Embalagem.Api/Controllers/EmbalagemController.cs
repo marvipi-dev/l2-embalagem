@@ -18,28 +18,38 @@ public class EmbalagemController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<EmbalagemGetResponse> Embalagem()
+    public IActionResult Embalagem()
     {
-        return _embalagemService.BuscarEmbalados().Select(e => new EmbalagemGetResponse()
+        var embalados = _embalagemService.BuscarEmbalados();
+        if (embalados == null)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable);
+        }
+
+        return Ok(embalados.Select(e => new EmbalagemGetResponse()
         {
             ProdutoId = e.ProdutoId,
             CaixaId = e.CaixaId,
             PedidoId = e.PedidoId
-        });
+        }));
     }
 
     [HttpPost]
-    public EmbalagemPostResponse Embalagem(EmbalagemPostRequest postRequest)
+    public IActionResult Embalagem(EmbalagemPostRequest postRequest)
     {
-        // TODO: tratamento de erros
         // TODO: validar request
-        // TODO: validar embalados
         // TODO: tornar assíncrono
         var embalados = _embalagemService.Embalar(postRequest.Pedidos);
+
+        if (embalados == null)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable);
+        }
+        
         var response = new EmbalagemPostResponse()
         {
             Pedidos = embalados
         };
-        return response;
+        return Ok(response);
     }
 }

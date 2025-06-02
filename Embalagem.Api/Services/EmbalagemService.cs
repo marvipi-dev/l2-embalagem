@@ -13,15 +13,20 @@ public class EmbalagemService : IEmbalagemService
         _repository = repository;
     }
 
-    public IEnumerable<RegistroEmbalagem> BuscarEmbalados()
+    public IEnumerable<RegistroEmbalagem>? BuscarEmbalados()
     {
         return _repository.LerEmbalagens();
     }
 
-    public IOrderedEnumerable<Views.Embalagem> Embalar(IEnumerable<Pedido> pedidos)
+    public IOrderedEnumerable<Views.Embalagem>? Embalar(IEnumerable<Pedido> pedidos)
     {
+        var caixas = _repository.LerCaixas()?.OrderBy(c => c.Volume);
+        if (caixas == null)
+        {
+            return null;
+        }
+
         var embalagens = new List<Views.Embalagem>();
-        var caixas = _repository.LerCaixas().OrderBy(c => c.Volume);
         var pedidosPorVolume = pedidos.OrderBy(p => p.Volume);
 
         // Separar os pedidos que não cabem em nenhuma caixa.
@@ -195,7 +200,11 @@ public class EmbalagemService : IEmbalagemService
         }
 
         var retorno = embalagensFinal.OrderBy(e => e.PedidoId);
-        _repository.Escrever(retorno); // TODO retornar algo quando o banco de dados não conseguir escrever
+        var sucesso = _repository.Escrever(retorno);
+        if (!sucesso.HasValue || !sucesso.Value)
+        {
+            return null;
+        }
         
         return retorno;
     }

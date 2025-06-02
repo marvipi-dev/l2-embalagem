@@ -18,12 +18,23 @@ public class UsuarioController : ControllerBase
     [HttpPost]
     public IActionResult Registrar([FromBody] Usuario usuario)
     {
-        if (_repository.Existe(usuario))
+        var existe = _repository.Existe(usuario);
+        if (existe == null)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable);
+        }
+        
+        if (existe.Value)
         {
             return Conflict("Usuario já cadastrado");
         }
 
         var sucesso = _repository.Escrever(usuario);
-        return sucesso ? Created() : StatusCode(StatusCodes.Status503ServiceUnavailable);
+        if (sucesso == null || !sucesso.Value)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable);
+        }
+        
+        return Created();
     }
 }
