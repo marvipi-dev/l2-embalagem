@@ -4,7 +4,7 @@ Ele é composto por um microserviço que embala produtos na menor quantidade de 
 Ambos rodam em containers Docker e são executados simultaneamente por meio do Docker Compose.
 
 
-Para ver a continuação deste projeto, acesse o [branch dev](https://github.com/marvipi-dev/l2-embalagem/tree/dev) do repositório. Ele contém diversas melhorias que não puderam ser implementadas a tempo de entrega, incluindo autenticação e testes unitários.
+Para ver a continuação deste projeto, acesse o [branch dev](https://github.com/marvipi-dev/l2-embalagem/tree/dev) do repositório. Ele contém diversas melhorias que não puderam ser implementadas a tempo de entrega, incluindo autenticação, testes unitários e procedimentos armazenados.
 
 # Como executar
 ## Pré-requisitos
