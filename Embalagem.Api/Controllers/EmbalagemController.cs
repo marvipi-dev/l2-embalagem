@@ -1,4 +1,3 @@
-using Embalagem.Api.Data;
 using Embalagem.Api.Services;
 using Embalagem.Api.Views;
 using Microsoft.AspNetCore.Authorization;
@@ -11,19 +10,22 @@ namespace Embalagem.Api.Controllers;
 [ApiController]
 public class EmbalagemController : ControllerBase
 {
-    private readonly IRepository _repository;
     private readonly IEmbalagemService _embalagemService;
 
-    public EmbalagemController(IRepository repository, IEmbalagemService embalagemService)
+    public EmbalagemController(IEmbalagemService embalagemService)
     {
-        _repository = repository;
         _embalagemService = embalagemService;
     }
 
     [HttpGet]
     public IEnumerable<EmbalagemGetResponse> Embalagem()
     {
-        return _repository.LerEmbalagens();
+        return _embalagemService.BuscarEmbalados().Select(e => new EmbalagemGetResponse()
+        {
+            ProdutoId = e.ProdutoId,
+            CaixaId = e.CaixaId,
+            PedidoId = e.PedidoId
+        });
     }
 
     [HttpPost]

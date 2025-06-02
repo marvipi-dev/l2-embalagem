@@ -1,4 +1,5 @@
 using Embalagem.Api.Data;
+using Embalagem.Api.Models;
 using Embalagem.Api.Views;
 
 namespace Embalagem.Api.Services;
@@ -10,6 +11,11 @@ public class EmbalagemService : IEmbalagemService
     public EmbalagemService(IRepository repository)
     {
         _repository = repository;
+    }
+
+    public IEnumerable<RegistroEmbalagem> BuscarEmbalados()
+    {
+        return _repository.LerEmbalagens();
     }
 
     public IOrderedEnumerable<Views.Embalagem> Embalar(IEnumerable<Pedido> pedidos)

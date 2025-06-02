@@ -58,12 +58,12 @@ public class SqlServerDapper : IRepository
         return linhasEscritas > 0;
     }
 
-    public IEnumerable<EmbalagemGetResponse> LerEmbalagens()
+    public IEnumerable<RegistroEmbalagem> LerEmbalagens()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             var embalagens = connection.Query(SelectEmbalagens);
-            return embalagens.Select(e => new EmbalagemGetResponse
+            return embalagens.Select(e => new RegistroEmbalagem
             {
                 PedidoId = e.pedido_id,
                 CaixaId = e.caixa_id,

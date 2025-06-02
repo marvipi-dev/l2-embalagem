@@ -8,5 +8,5 @@ public class EmbalagemGetResponse
 
     [JsonPropertyName("caixa_id")] public string? CaixaId { get; set; }
 
-    [JsonPropertyName("produto_id")] public string ProdutoId { get; set; }
+    [JsonPropertyName("produto_id")] public required string ProdutoId { get; set; }
 }
