@@ -26,7 +26,7 @@ public class EmbalagemService : IEmbalagemService
             return embalagens.Order();
         }
         
-        var caixas = _repository.LerCaixas()?.OrderBy(c => c.Volume);
+        var caixas = _repository.LerCaixas()?.OrderBy(c => c.Dimensoes.Volume);
         if (caixas == null)
         {
             return null;

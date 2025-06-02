@@ -34,7 +34,17 @@ public class SqlServerDapper : IRepository
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                return connection.Query<CaixaModel>(SelectCaixas);
+                return connection.Query(SelectCaixas)
+                    .Select(c => new CaixaModel()
+                    {
+                        CaixaId = c.CaixaId,
+                        Dimensoes = new()
+                        {
+                            Altura = c.altura,
+                            Largura = c.largura,
+                            Comprimento = c.comprimento
+                        }
+                    });
             }
         }
         catch

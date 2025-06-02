@@ -12,18 +12,21 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 5,
-            Largura = 10,
-            Comprimento = 7
+            Dimensoes = new()
+            {
+                Altura = 5,
+                Largura = 10,
+                Comprimento = 7
+            }
         };
         var produto = new Produto()
         {
             ProdutoId = "_",
             Dimensoes = new()
             {
-                Altura = caixa.Altura + 1,
-                Largura = caixa.Largura + 1,
-                Comprimento = caixa.Comprimento + 1
+                Altura = caixa.Dimensoes.Altura + 1,
+                Largura = caixa.Dimensoes.Largura + 1,
+                Comprimento = caixa.Dimensoes.Comprimento + 1
             }
         };
 
@@ -41,18 +44,21 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 25,
-            Largura = 40,
-            Comprimento = 30
+            Dimensoes = new()
+            {
+                Altura = 25,
+                Largura = 40,
+                Comprimento = 30
+            }
         };
         var produto = new Produto()
         {
             ProdutoId = "_",
             Dimensoes = new()
             {
-                Altura = caixa.Altura,
-                Largura = caixa.Largura,
-                Comprimento = caixa.Comprimento
+                Altura = caixa.Dimensoes.Altura,
+                Largura = caixa.Dimensoes.Largura,
+                Comprimento = caixa.Dimensoes.Comprimento
             }
         };
 
@@ -70,18 +76,21 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 15,
-            Largura = 30,
-            Comprimento = 45
+            Dimensoes = new()
+            {
+                Altura = 15,
+                Largura = 30,
+                Comprimento = 45
+            }
         };
         var produto = new Produto()
         {
             ProdutoId = "_",
             Dimensoes = new()
             {
-                Altura = caixa.Altura - 1,
-                Largura = caixa.Largura - 1,
-                Comprimento = caixa.Comprimento - 1
+                Altura = caixa.Dimensoes.Altura - 1,
+                Largura = caixa.Dimensoes.Largura - 1,
+                Comprimento = caixa.Dimensoes.Comprimento - 1
             }
         };
 
@@ -100,9 +109,12 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 30,
-            Largura = 40,
-            Comprimento = 50
+            Dimensoes = new()
+            {
+                Altura = 30,
+                Largura = 40,
+                Comprimento = 50
+            }
         };
         var pedido = new Pedido()
         {
@@ -114,9 +126,9 @@ public class CaixaModelTest
                     ProdutoId = "_",
                     Dimensoes = new()
                     {
-                        Altura = caixa.Altura / 2,
-                        Largura = caixa.Largura / 2,
-                        Comprimento = caixa.Comprimento / 2
+                        Altura = caixa.Dimensoes.Altura / 2,
+                        Largura = caixa.Dimensoes.Largura / 2,
+                        Comprimento = caixa.Dimensoes.Comprimento / 2
                     }
                 },
                 new()
@@ -124,9 +136,9 @@ public class CaixaModelTest
                     ProdutoId = "__",
                     Dimensoes = new()
                     {
-                        Altura = caixa.Altura - 1,
-                        Largura = caixa.Largura - 1,
-                        Comprimento = caixa.Comprimento - 1
+                        Altura = caixa.Dimensoes.Altura - 1,
+                        Largura = caixa.Dimensoes.Largura - 1,
+                        Comprimento = caixa.Dimensoes.Comprimento - 1
                     }
                 }
             }
@@ -146,9 +158,12 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 50,
-            Largura = 60,
-            Comprimento = 40
+            Dimensoes = new()
+            {
+                Altura = 50,
+                Largura = 60,
+                Comprimento = 40
+            }
         };
         var pedido = new Pedido()
         {
@@ -160,9 +175,9 @@ public class CaixaModelTest
                     ProdutoId = "_",
                     Dimensoes = new()
                     {
-                        Altura = caixa.Altura / 2,
-                        Largura = caixa.Largura / 2,
-                        Comprimento = caixa.Comprimento / 2
+                        Altura = caixa.Dimensoes.Altura / 2,
+                        Largura = caixa.Dimensoes.Largura / 2,
+                        Comprimento = caixa.Dimensoes.Comprimento / 2
                     }
                 },
                 new()
@@ -170,9 +185,9 @@ public class CaixaModelTest
                     ProdutoId = "__",
                     Dimensoes = new()
                     {
-                        Altura = caixa.Altura / 2,
-                        Largura = caixa.Largura / 2,
-                        Comprimento = caixa.Comprimento / 2
+                        Altura = caixa.Dimensoes.Altura / 2,
+                        Largura = caixa.Dimensoes.Largura / 2,
+                        Comprimento = caixa.Dimensoes.Comprimento / 2
                     }
                 }
             }
@@ -192,9 +207,12 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 20,
-            Largura = 15,
-            Comprimento = 18
+            Dimensoes = new()
+            {
+                Altura = 20,
+                Largura = 15,
+                Comprimento = 18
+            }
         };
         var pedido = new Pedido()
         {
@@ -206,9 +224,9 @@ public class CaixaModelTest
                     ProdutoId = "_",
                     Dimensoes = new()
                     {
-                        Altura = caixa.Altura / 3,
-                        Largura = caixa.Largura / 3,
-                        Comprimento = caixa.Comprimento / 3
+                        Altura = caixa.Dimensoes.Altura / 3,
+                        Largura = caixa.Dimensoes.Largura / 3,
+                        Comprimento = caixa.Dimensoes.Comprimento / 3
                     }
                 },
                 new()
@@ -216,9 +234,9 @@ public class CaixaModelTest
                     ProdutoId = "__",
                     Dimensoes = new()
                     {
-                        Altura = caixa.Altura / 3,
-                        Largura = caixa.Largura / 3,
-                        Comprimento = caixa.Comprimento / 3
+                        Altura = caixa.Dimensoes.Altura / 3,
+                        Largura = caixa.Dimensoes.Largura / 3,
+                        Comprimento = caixa.Dimensoes.Comprimento / 3
                     }
                 }
             }
@@ -238,9 +256,12 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 55,
-            Largura = 70,
-            Comprimento = 60
+            Dimensoes = new()
+            {
+                Altura = 55,
+                Largura = 70,
+                Comprimento = 60
+            }
         };
         var pedidos = new List<Pedido>()
         {
@@ -254,9 +275,9 @@ public class CaixaModelTest
                         ProdutoId = "x",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura / 3,
-                            Largura = caixa.Largura / 3,
-                            Comprimento = caixa.Comprimento / 3
+                            Altura = caixa.Dimensoes.Altura / 3,
+                            Largura = caixa.Dimensoes.Largura / 3,
+                            Comprimento = caixa.Dimensoes.Comprimento / 3
                         }
                     },
                     new()
@@ -264,9 +285,9 @@ public class CaixaModelTest
                         ProdutoId = "y",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura / 3,
-                            Largura = caixa.Largura / 3,
-                            Comprimento = caixa.Comprimento / 3
+                            Altura = caixa.Dimensoes.Altura / 3,
+                            Largura = caixa.Dimensoes.Largura / 3,
+                            Comprimento = caixa.Dimensoes.Comprimento / 3
                         }
                     }
                 }
@@ -281,9 +302,9 @@ public class CaixaModelTest
                         ProdutoId = "z",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura,
-                            Largura = caixa.Largura,
-                            Comprimento = caixa.Comprimento
+                            Altura = caixa.Dimensoes.Altura,
+                            Largura = caixa.Dimensoes.Largura,
+                            Comprimento = caixa.Dimensoes.Comprimento
                         }
                     }
                 }
@@ -304,9 +325,12 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 15,
-            Largura = 15,
-            Comprimento = 15
+            Dimensoes = new()
+            {
+                Altura = 15,
+                Largura = 15,
+                Comprimento = 15
+            }
         };
         var pedidos = new List<Pedido>()
         {
@@ -320,9 +344,9 @@ public class CaixaModelTest
                         ProdutoId = "x",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura / 3,
-                            Largura = caixa.Largura / 3,
-                            Comprimento = caixa.Comprimento / 3
+                            Altura = caixa.Dimensoes.Altura / 3,
+                            Largura = caixa.Dimensoes.Largura / 3,
+                            Comprimento = caixa.Dimensoes.Comprimento / 3
                         }
                     },
                     new()
@@ -330,9 +354,9 @@ public class CaixaModelTest
                         ProdutoId = "y",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura / 3,
-                            Largura = caixa.Largura / 3,
-                            Comprimento = caixa.Comprimento / 3
+                            Altura = caixa.Dimensoes.Altura / 3,
+                            Largura = caixa.Dimensoes.Largura / 3,
+                            Comprimento = caixa.Dimensoes.Comprimento / 3
                         }
                     }
                 }
@@ -347,9 +371,9 @@ public class CaixaModelTest
                         ProdutoId = "z",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura / 3,
-                            Largura = caixa.Largura / 3,
-                            Comprimento = caixa.Comprimento / 3
+                            Altura = caixa.Dimensoes.Altura / 3,
+                            Largura = caixa.Dimensoes.Largura / 3,
+                            Comprimento = caixa.Dimensoes.Comprimento / 3
                         }
                     }
                 }
@@ -370,9 +394,12 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "_",
-            Altura = 24,
-            Largura = 32,
-            Comprimento = 48
+            Dimensoes = new()
+            {
+                Altura = 24,
+                Largura = 32,
+                Comprimento = 48
+            }
         };
         var pedidos = new List<Pedido>()
         {
@@ -386,9 +413,9 @@ public class CaixaModelTest
                         ProdutoId = "x",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura / 4,
-                            Largura = caixa.Largura / 4,
-                            Comprimento = caixa.Comprimento / 4
+                            Altura = caixa.Dimensoes.Altura / 4,
+                            Largura = caixa.Dimensoes.Largura / 4,
+                            Comprimento = caixa.Dimensoes.Comprimento / 4
                         }
                     },
                     new()
@@ -396,9 +423,9 @@ public class CaixaModelTest
                         ProdutoId = "y",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura / 8,
-                            Largura = caixa.Largura / 8,
-                            Comprimento = caixa.Comprimento / 8
+                            Altura = caixa.Dimensoes.Altura / 8,
+                            Largura = caixa.Dimensoes.Largura / 8,
+                            Comprimento = caixa.Dimensoes.Comprimento / 8
                         }
                     }
                 }
@@ -413,9 +440,9 @@ public class CaixaModelTest
                         ProdutoId = "z",
                         Dimensoes = new()
                         {
-                            Altura = caixa.Altura / 6,
-                            Largura = caixa.Largura / 6,
-                            Comprimento = caixa.Comprimento / 6
+                            Altura = caixa.Dimensoes.Altura / 6,
+                            Largura = caixa.Dimensoes.Largura / 6,
+                            Comprimento = caixa.Dimensoes.Comprimento / 6
                         }
                     }
                 }
@@ -436,33 +463,36 @@ public class CaixaModelTest
         var caixa = new CaixaModel()
         {
             CaixaId = "caixa 1",
-            Altura = 100,
-            Largura = 100,
-            Comprimento = 100
+            Dimensoes = new()
+            {
+                Altura = 100,
+                Largura = 100,
+                Comprimento = 100
+            }
         };
         var produtos = new List<Produto>()
         {
             new()
             {
                 ProdutoId = "a",
-                Dimensoes = new() { Altura = 1, Largura = 1, Comprimento = 1}
+                Dimensoes = new() { Altura = 1, Largura = 1, Comprimento = 1 }
             },
             new()
             {
                 ProdutoId = "b",
-                Dimensoes = new() { Altura = 2, Largura = 2, Comprimento = 2}
+                Dimensoes = new() { Altura = 2, Largura = 2, Comprimento = 2 }
             },
             new()
             {
-               ProdutoId = "c",
-               Dimensoes = new() { Altura = 3, Largura = 3, Comprimento = 3}
+                ProdutoId = "c",
+                Dimensoes = new() { Altura = 3, Largura = 3, Comprimento = 3 }
             }
         };
-        
+
         // Act
         var embalagem = caixa.Embalar(produtos);
         var produtoIds = produtos.Select(p => p.ProdutoId);
-        
+
         // Assert
         Assert.Multiple(() =>
         {

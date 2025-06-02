@@ -1,15 +1,11 @@
-using System.Collections.Immutable;
 using Embalagem.Api.Views;
 
 namespace Embalagem.Api.Models;
 
-public class CaixaModel // TODO: generalizar Altura, Largura, Comprimento e Volume
+public class CaixaModel
 {
     public required string CaixaId { get; set; }
-    public int Altura { get; set; }
-    public int Largura { get; set; }
-    public int Comprimento { get; set; }
-    public int Volume => Altura * Largura * Comprimento;
+    public required Dimensoes Dimensoes { get; set; }
 
     /// <summary>
     /// Verifica se um produto cabe dentro da caixa.
@@ -18,7 +14,7 @@ public class CaixaModel // TODO: generalizar Altura, Largura, Comprimento e Volu
     /// <returns>true se o produto cabe dentro da caixa, senão false.</returns>
     public bool Comporta(Produto produto)
     {
-        return produto.Dimensoes < new Dimensoes() { Altura = Altura, Largura = Largura, Comprimento = Comprimento};
+        return produto.Dimensoes < Dimensoes;
     }
     
     /// <summary>
@@ -30,7 +26,7 @@ public class CaixaModel // TODO: generalizar Altura, Largura, Comprimento e Volu
     {
         var dimensoesPedido = Medir(pedido);
 
-        return dimensoesPedido < new Dimensoes() { Altura = Altura, Largura = Largura, Comprimento = Comprimento};
+        return dimensoesPedido < Dimensoes;
     }
 
     /// <summary>
@@ -44,7 +40,7 @@ public class CaixaModel // TODO: generalizar Altura, Largura, Comprimento e Volu
             Select(Medir)
             .Aggregate(new Dimensoes() {Altura = 0, Largura = 0, Comprimento = 0}, (d, next) => d + next);
 
-        return dimensaoTotal < new Dimensoes() { Altura = Altura, Largura = Largura, Comprimento = Comprimento};
+        return dimensaoTotal < Dimensoes;
     }
     
     private static Dimensoes Medir(Pedido pedido)
