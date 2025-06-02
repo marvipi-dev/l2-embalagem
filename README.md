@@ -21,7 +21,7 @@ Microserviço que embala produtos na menor quantidade de caixas possível, prior
 
 ### Instruções
 
-Assegure que o Docker está rodando e siga os seguintes passos:
+Assegure que o Docker está rodando e siga os seguintes passos: 
 1. Clone o repositório do projeto:
 ```bash
 git clone https://github.com/marvipi-dev/l2-embalagem.git
@@ -44,7 +44,7 @@ docker compose up
 ```
 
 Com isso, o Docker compilará o API e o subirá dentro de um contêiner e também baixará o banco de dados pré-configurado
-do Docker Hub ([link](https://hub.docker.com/r/marvipi/embalagem-repository-sqlserver "link")).
+do Docker Hub ([link](https://hub.docker.com/r/marvipi/embalagem-repository-sqlserver "link")). 
 
 O Swagger poderá então ser acessado pela URL: http://localhost/swagger.
 
@@ -70,3 +70,5 @@ O API segue o padrão REST e possui quatro endpoints:
 
 1. 🗹 Segurança na autenticação da API;
 2. 🗹 Deve conter teste unitário;
+
+
