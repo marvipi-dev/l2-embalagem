@@ -37,21 +37,22 @@ public class EmbalagemService : IEmbalagemService
         var pedidosPorVolume = pedidos.OrderBy(p => p.Volume);
 
         // Separar e classificar os pedidos.
-        var naoEmbalaveisEmUmaCaixa = pedidosPorVolume.Where(p => caixas.All(c => !c.Comporta(p)));
+        var naoEmbalaveisEmUmaCaixa = pedidosPorVolume
+            .Where(pe => caixas.All(c => !c.Comporta(pe.Dimensoes)));
 
         var embalaveisEmUmaCaixa = pedidosPorVolume.Except(naoEmbalaveisEmUmaCaixa);
 
         var embalavelEmVariasCaixas = naoEmbalaveisEmUmaCaixa.Select(pe => new PedidoViewModel()
             {
                 PedidoId = pe.PedidoId,
-                Produtos = pe.Produtos.Where(p => caixas.Any(c => c.Comporta(p)))
+                Produtos = pe.Produtos.Where(p => caixas.Any(c => c.Comporta(p.Dimensoes)))
             }).Where(pe => pe.Produtos.Any()) // Pedidos que contém um único produto não embalável ficarão vazios.
             .ToList();
 
         var naoEmbalaveis = naoEmbalaveisEmUmaCaixa.Select(pe => new PedidoViewModel()
         {
             PedidoId = pe.PedidoId,
-            Produtos = pe.Produtos.Where(p => caixas.All(c => !c.Comporta(p)))
+            Produtos = pe.Produtos.Where(p => caixas.All(c => !c.Comporta(p.Dimensoes)))
         }).Where(pe => pe.Produtos.Any()); // Pedidos que contém um único produto não embalável ficarão vazios.
 
 
@@ -59,7 +60,10 @@ public class EmbalagemService : IEmbalagemService
         embalagens.AddRange(embalaveisEmUmaCaixa.Select(pe => new EmbalagemViewModel
         {
             PedidoId = pe.PedidoId,
-            Caixas = new List<CaixaViewModel> { caixas.First(c => c.Comporta(pe)).Embalar(pe.Produtos) }
+            Caixas = new List<CaixaViewModel>
+            {
+                Embalar(pe.Produtos, caixas.First(c => c.Comporta(pe.Dimensoes))) 
+            }
         }));
 
         // Embalar os pedidos que não cabem inteiramente em uma única caixa.
@@ -69,7 +73,7 @@ public class EmbalagemService : IEmbalagemService
             {
                 foreach (var pedido in new List<PedidoViewModel>(embalavelEmVariasCaixas))
                 {
-                    var qtdEmbalaveis = pedido.Produtos.Count(caixa.Comporta);
+                    var qtdEmbalaveis = pedido.Produtos.Count(p => caixa.Comporta(p.Dimensoes));
 
                     var couberam = pedido.Produtos.Take(qtdEmbalaveis);
                     var naoCouberam = pedido.Produtos.Skip(qtdEmbalaveis);
@@ -150,6 +154,15 @@ public class EmbalagemService : IEmbalagemService
         }
 
         return embalagensOrdenadasPorPedido;
+    }
+    
+    private CaixaViewModel Embalar(IEnumerable<ProdutoViewModel> produtos, Caixa caixa)
+    {
+        return new CaixaViewModel()
+        {
+            CaixaId = caixa.CaixaId,
+            Produtos = produtos.Select(p => p.ProdutoId)
+        };
     }
 
     private static IEnumerable<EmbalagemRegistro> RegistrarEmbalagens(IOrderedEnumerable<EmbalagemViewModel> embalagensOrdenadasPorPedido)
