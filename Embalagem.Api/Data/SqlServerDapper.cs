@@ -11,7 +11,7 @@ public class SqlServerDapper : IRepository
 
     private const string InsertEmbalagens = @"INSERT INTO [PedidoEmbalado] 
                                                      (pedido_id, caixa_id, produto_id)
-                                              VALUES (@pedido_id, @caixa_id, @produto_id)";
+                                              VALUES (@PedidoId, @CaixaId, @ProdutoId)";
 
     private const string SelectEmbalagens = @"SELECT * FROM [PedidoEmbalado]";
 
@@ -24,7 +24,7 @@ public class SqlServerDapper : IRepository
 
     public SqlServerDapper(IConfiguration config)
     {
-        _connectionString = config["ConnectionStrings:Default"];
+        _connectionString = config["ConnectionStrings:Default"]!;
     }
 
     public async Task<IEnumerable<Caixa>?> LerCaixasAsync()
@@ -56,22 +56,11 @@ public class SqlServerDapper : IRepository
     {
         try
         {
-            var linhasEscritas = 0;
             using (var connection = new SqlConnection(_connectionString))
             {
-                foreach (var embalagem in embalagens)
-                {
-                    linhasEscritas += await connection.ExecuteAsync(InsertEmbalagens, // TODO: Bulk Insert
-                        new
-                        {
-                            pedido_id = embalagem.PedidoId,
-                            caixa_id = embalagem.CaixaId,
-                            produto_id = embalagem.ProdutoId
-                        });
-                }
+                var linhasEscritas = await connection.ExecuteAsync(InsertEmbalagens, embalagens);
+                return linhasEscritas > 0;
             }
-
-            return linhasEscritas > 0;
         }
         catch
         {
