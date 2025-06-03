@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Embalagem.Api.Views;
+namespace Embalagem.Api.Views.HttpResponses;
 
-public class CaixaView
+public class CaixaViewModel
 {
     [JsonPropertyName("caixa_id")] public string? CaixaId { get; set; }
 

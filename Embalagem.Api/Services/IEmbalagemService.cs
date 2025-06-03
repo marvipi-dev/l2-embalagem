@@ -1,5 +1,6 @@
 using Embalagem.Api.Models;
-using Embalagem.Api.Views;
+using Embalagem.Api.Views.HttpRequests;
+using Embalagem.Api.Views.HttpResponses;
 
 namespace Embalagem.Api.Services;
 
@@ -9,18 +10,18 @@ public interface IEmbalagemService
     /// Busca todas os pedidos que já foram embalados.
     /// </summary>
     /// <returns>
-    ///     Uma sequência de <see cref="RegistroEmbalagem"/> que contém dados de todos os pedidos já processados.
+    ///     Uma sequência de <see cref="EmbalagemRegistro"/> que contém dados de todos os pedidos já processados.
     ///     Ou null, se não for possível buscar embalagens.
     /// </returns>
-    public Task<IEnumerable<RegistroEmbalagem>?> BuscarEmbaladosAsync();
+    public Task<IEnumerable<EmbalagemRegistro>?> BuscarEmbaladosAsync();
     
     /// <summary>
     /// Embala pedidos na menor quantidade de caixas o possível, priorizando as de menor volume.
     /// </summary>
-    /// <param name="pedidos">Uma sequência de <see cref="Pedido"/>.</param>
+    /// <param name="pedidos">Uma sequência de <see cref="PedidoViewModel"/>.</param>
     /// <returns>
-    ///     Uma sequência de <see cref="Embalagem"/> que contêm os pedidos embaláveis e não embaláveis, ordenados pelo id do pedido.
+    ///     Uma sequência de <see cref="EmbalagemViewModel"/> que contêm os pedidos embaláveis e não embaláveis, ordenados pelo id do pedido.
     ///     Ou null, se não for possível embalar nenhum pedido.
     /// </returns>
-    public Task<IOrderedEnumerable<Views.Embalagem>?> EmbalarAsync(IEnumerable<Pedido> pedidos);
+    public Task<IOrderedEnumerable<EmbalagemViewModel>?> EmbalarAsync(IEnumerable<PedidoViewModel> pedidos);
 }

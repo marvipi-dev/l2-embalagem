@@ -1,6 +1,7 @@
 using Embalagem.Api.Data;
 using Embalagem.Api.Models;
-using Embalagem.Api.Views;
+using Embalagem.Api.Views.HttpRequests;
+using Embalagem.Api.Views.HttpResponses;
 
 namespace Embalagem.Api.Services;
 
@@ -13,14 +14,14 @@ public class EmbalagemService : IEmbalagemService
         _repository = repository;
     }
 
-    public async Task<IEnumerable<RegistroEmbalagem>?> BuscarEmbaladosAsync()
+    public async Task<IEnumerable<EmbalagemRegistro>?> BuscarEmbaladosAsync()
     {
         return await _repository.LerEmbalagensAsync();
     }
 
-    public async Task<IOrderedEnumerable<Views.Embalagem>?> EmbalarAsync(IEnumerable<Pedido> pedidos)
+    public async Task<IOrderedEnumerable<EmbalagemViewModel>?> EmbalarAsync(IEnumerable<PedidoViewModel> pedidos)
     {
-        var embalagens = new List<Views.Embalagem>();
+        var embalagens = new List<EmbalagemViewModel>();
         if (!pedidos.Any())
         {
             return embalagens.Order();
@@ -40,14 +41,14 @@ public class EmbalagemService : IEmbalagemService
 
         var embalaveisEmUmaCaixa = pedidosPorVolume.Except(naoEmbalaveisEmUmaCaixa);
 
-        var embalavelEmVariasCaixas = naoEmbalaveisEmUmaCaixa.Select(pe => new Pedido()
+        var embalavelEmVariasCaixas = naoEmbalaveisEmUmaCaixa.Select(pe => new PedidoViewModel()
             {
                 PedidoId = pe.PedidoId,
                 Produtos = pe.Produtos.Where(p => caixas.Any(c => c.Comporta(p)))
             }).Where(pe => pe.Produtos.Any()) // Pedidos que contém um único produto não embalável ficarão vazios.
             .ToList();
 
-        var naoEmbalaveis = naoEmbalaveisEmUmaCaixa.Select(pe => new Pedido()
+        var naoEmbalaveis = naoEmbalaveisEmUmaCaixa.Select(pe => new PedidoViewModel()
         {
             PedidoId = pe.PedidoId,
             Produtos = pe.Produtos.Where(p => caixas.All(c => !c.Comporta(p)))
@@ -55,10 +56,10 @@ public class EmbalagemService : IEmbalagemService
 
 
         // Embalar os pedidos que cabem inteiramente em uma única caixa.
-        embalagens.AddRange(embalaveisEmUmaCaixa.Select(pe => new Views.Embalagem
+        embalagens.AddRange(embalaveisEmUmaCaixa.Select(pe => new EmbalagemViewModel
         {
             PedidoId = pe.PedidoId,
-            Caixas = new List<CaixaView> { caixas.First(c => c.Comporta(pe)).Embalar(pe.Produtos) }
+            Caixas = new List<CaixaViewModel> { caixas.First(c => c.Comporta(pe)).Embalar(pe.Produtos) }
         }));
 
         // Embalar os pedidos que não cabem inteiramente em uma única caixa.
@@ -66,7 +67,7 @@ public class EmbalagemService : IEmbalagemService
         {
             foreach (var caixa in caixas)
             {
-                foreach (var pedido in new List<Pedido>(embalavelEmVariasCaixas))
+                foreach (var pedido in new List<PedidoViewModel>(embalavelEmVariasCaixas))
                 {
                     var qtdEmbalaveis = pedido.Produtos.Count(caixa.Comporta);
 
@@ -78,7 +79,7 @@ public class EmbalagemService : IEmbalagemService
                         embalagens.Add(new()
                         {
                             PedidoId = pedido.PedidoId,
-                            Caixas = new List<CaixaView>
+                            Caixas = new List<CaixaViewModel>
                             {
                                 new()
                                 {
@@ -104,10 +105,10 @@ public class EmbalagemService : IEmbalagemService
         }
 
         // Preparar os produtos não embalaveis para retorno.
-        embalagens.AddRange(naoEmbalaveis.Select(pe => new Views.Embalagem()
+        embalagens.AddRange(naoEmbalaveis.Select(pe => new EmbalagemViewModel()
         {
             PedidoId = pe.PedidoId,
-            Caixas = new List<CaixaView>
+            Caixas = new List<CaixaViewModel>
             {
                 new()
                 {
@@ -120,7 +121,7 @@ public class EmbalagemService : IEmbalagemService
         
 
         // Agrupar embalagens por id.
-        var embalagensAgrupadasPorPedido = new List<Views.Embalagem>();
+        var embalagensAgrupadasPorPedido = new List<EmbalagemViewModel>();
         foreach (var grupo in embalagens.GroupBy(e => (e.PedidoId, e.Caixas)))
         {
             var i = embalagensAgrupadasPorPedido.FindIndex(e => e.PedidoId == grupo.Key.PedidoId);
@@ -140,12 +141,27 @@ public class EmbalagemService : IEmbalagemService
         }
 
         var embalagensOrdenadasPorPedido = embalagensAgrupadasPorPedido.OrderBy(e => e.PedidoId);
-        var sucesso = await _repository.EscreverAsync(embalagensOrdenadasPorPedido);
+        
+        var registros = RegistrarEmbalagens(embalagensOrdenadasPorPedido);
+        var sucesso = await _repository.EscreverAsync(registros);
         if (!sucesso.HasValue || !sucesso.Value)
         {
             return null;
         }
 
         return embalagensOrdenadasPorPedido;
+    }
+
+    private static IEnumerable<EmbalagemRegistro> RegistrarEmbalagens(IOrderedEnumerable<EmbalagemViewModel> embalagensOrdenadasPorPedido)
+    {
+        return embalagensOrdenadasPorPedido
+            .SelectMany(e => e.Caixas
+                .SelectMany(c => c.Produtos
+                    .Select(p => new EmbalagemRegistro()
+                    {
+                        PedidoId = e.PedidoId,
+                        CaixaId = c.CaixaId,
+                        ProdutoId = p
+                    })));
     }
 }

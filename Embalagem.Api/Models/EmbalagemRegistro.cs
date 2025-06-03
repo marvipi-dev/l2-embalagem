@@ -1,6 +1,6 @@
 namespace Embalagem.Api.Models;
 
-public class RegistroEmbalagem
+public class EmbalagemRegistro
 {
     public int PedidoId { get; set; }
 

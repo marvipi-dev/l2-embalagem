@@ -1,4 +1,4 @@
-namespace Embalagem.Api.Views;
+namespace Embalagem.Api.Helpers;
 
 public class Dimensoes
 {

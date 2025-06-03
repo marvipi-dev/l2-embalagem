@@ -1,14 +1,15 @@
 using System.Text.Json.Serialization;
+using Embalagem.Api.Helpers;
 
-namespace Embalagem.Api.Views;
+namespace Embalagem.Api.Views.HttpRequests;
 
-public class Produto
+public class ProdutoViewModel
 {
     [JsonPropertyName("produto_id")] public required string ProdutoId { get; set; }
 
     public required Dimensoes Dimensoes { get; set; }
 
-    protected bool Equals(Produto other)
+    protected bool Equals(ProdutoViewModel other)
     {
         return ProdutoId == other.ProdutoId && Dimensoes.Equals(other.Dimensoes);
     }
@@ -30,7 +31,7 @@ public class Produto
             return false;
         }
 
-        return Equals((Produto)obj);
+        return Equals((ProdutoViewModel)obj);
     }
 
     public override int GetHashCode()

@@ -1,15 +1,15 @@
 ﻿using Embalagem.Api.Models;
-using Embalagem.Api.Views;
+using Embalagem.Api.Views.HttpRequests;
 
 namespace Embalagem.Api.Test.Models;
 
-public class CaixaModelTest
+public class CaixaTest
 {
     [Fact]
     public void Comporta_ProdutoDeVolumeMaior_RetornaFalso()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -19,7 +19,7 @@ public class CaixaModelTest
                 Comprimento = 7
             }
         };
-        var produto = new Produto()
+        var produto = new ProdutoViewModel()
         {
             ProdutoId = "_",
             Dimensoes = new()
@@ -41,7 +41,7 @@ public class CaixaModelTest
     public void Comporta_ProdutoDeVolumeIgual_RetornaFalso()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -51,7 +51,7 @@ public class CaixaModelTest
                 Comprimento = 30
             }
         };
-        var produto = new Produto()
+        var produto = new ProdutoViewModel()
         {
             ProdutoId = "_",
             Dimensoes = new()
@@ -73,7 +73,7 @@ public class CaixaModelTest
     public void Comporta_ProdutoDeVolumeMenor_RetornaVerdadeiro()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -83,7 +83,7 @@ public class CaixaModelTest
                 Comprimento = 45
             }
         };
-        var produto = new Produto()
+        var produto = new ProdutoViewModel()
         {
             ProdutoId = "_",
             Dimensoes = new()
@@ -106,7 +106,7 @@ public class CaixaModelTest
     public void Comporta_PedidoDeVolumeMaior_RetornaFalso()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -116,10 +116,10 @@ public class CaixaModelTest
                 Comprimento = 50
             }
         };
-        var pedido = new Pedido()
+        var pedido = new PedidoViewModel()
         {
             PedidoId = 0,
-            Produtos = new List<Produto>()
+            Produtos = new List<ProdutoViewModel>()
             {
                 new()
                 {
@@ -155,7 +155,7 @@ public class CaixaModelTest
     public void Comporta_PedidoDeVolumeIgual_RetornaFalso()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -165,10 +165,10 @@ public class CaixaModelTest
                 Comprimento = 40
             }
         };
-        var pedido = new Pedido()
+        var pedido = new PedidoViewModel()
         {
             PedidoId = 0,
-            Produtos = new List<Produto>()
+            Produtos = new List<ProdutoViewModel>()
             {
                 new()
                 {
@@ -204,7 +204,7 @@ public class CaixaModelTest
     public void Comporta_PedidoDeVolumeMenor_RetornaVerdadeiro()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -214,10 +214,10 @@ public class CaixaModelTest
                 Comprimento = 18
             }
         };
-        var pedido = new Pedido()
+        var pedido = new PedidoViewModel()
         {
             PedidoId = 0,
-            Produtos = new List<Produto>()
+            Produtos = new List<ProdutoViewModel>()
             {
                 new()
                 {
@@ -253,7 +253,7 @@ public class CaixaModelTest
     public void Comporta_PedidosDeVolumeMaior_RetornaFalso()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -263,12 +263,12 @@ public class CaixaModelTest
                 Comprimento = 60
             }
         };
-        var pedidos = new List<Pedido>()
+        var pedidos = new List<PedidoViewModel>()
         {
             new()
             {
                 PedidoId = 0,
-                Produtos = new List<Produto>()
+                Produtos = new List<ProdutoViewModel>()
                 {
                     new()
                     {
@@ -295,7 +295,7 @@ public class CaixaModelTest
             new()
             {
                 PedidoId = 1,
-                Produtos = new List<Produto>()
+                Produtos = new List<ProdutoViewModel>()
                 {
                     new()
                     {
@@ -322,7 +322,7 @@ public class CaixaModelTest
     public void Comporta_PedidosDeVolumeIgual_RetornaFalso()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -332,12 +332,12 @@ public class CaixaModelTest
                 Comprimento = 15
             }
         };
-        var pedidos = new List<Pedido>()
+        var pedidos = new List<PedidoViewModel>()
         {
             new()
             {
                 PedidoId = 0,
-                Produtos = new List<Produto>()
+                Produtos = new List<ProdutoViewModel>()
                 {
                     new()
                     {
@@ -364,7 +364,7 @@ public class CaixaModelTest
             new()
             {
                 PedidoId = 1,
-                Produtos = new List<Produto>()
+                Produtos = new List<ProdutoViewModel>()
                 {
                     new()
                     {
@@ -391,7 +391,7 @@ public class CaixaModelTest
     public void Comporta_PedidosDeVolumeMenor_RetornaVerdadeiro()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "_",
             Dimensoes = new()
@@ -401,12 +401,12 @@ public class CaixaModelTest
                 Comprimento = 48
             }
         };
-        var pedidos = new List<Pedido>()
+        var pedidos = new List<PedidoViewModel>()
         {
             new()
             {
                 PedidoId = 0,
-                Produtos = new List<Produto>()
+                Produtos = new List<ProdutoViewModel>()
                 {
                     new()
                     {
@@ -433,7 +433,7 @@ public class CaixaModelTest
             new()
             {
                 PedidoId = 1,
-                Produtos = new List<Produto>()
+                Produtos = new List<ProdutoViewModel>()
                 {
                     new()
                     {
@@ -460,7 +460,7 @@ public class CaixaModelTest
     public void Embalar_EmbalaTodosOsProdutosDoPedido()
     {
         // Arrange
-        var caixa = new CaixaModel()
+        var caixa = new Caixa()
         {
             CaixaId = "caixa 1",
             Dimensoes = new()
@@ -470,7 +470,7 @@ public class CaixaModelTest
                 Comprimento = 100
             }
         };
-        var produtos = new List<Produto>()
+        var produtos = new List<ProdutoViewModel>()
         {
             new()
             {

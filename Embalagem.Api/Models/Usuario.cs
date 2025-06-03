@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Embalagem.Api.Views;
+namespace Embalagem.Api.Models;
 
 public class Usuario
 {

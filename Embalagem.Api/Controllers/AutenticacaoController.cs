@@ -1,6 +1,6 @@
 using Embalagem.Api.Data;
+using Embalagem.Api.Models;
 using Embalagem.Api.Services;
-using Embalagem.Api.Views;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Embalagem.Api.Controllers;

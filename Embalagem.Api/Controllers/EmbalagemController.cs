@@ -1,5 +1,6 @@
 using Embalagem.Api.Services;
-using Embalagem.Api.Views;
+using Embalagem.Api.Views.HttpRequests;
+using Embalagem.Api.Views.HttpResponses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

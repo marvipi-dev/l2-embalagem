@@ -1,7 +1,6 @@
 using System.Data;
 using Dapper;
 using Embalagem.Api.Models;
-using Embalagem.Api.Views;
 using Microsoft.Data.SqlClient;
 
 namespace Embalagem.Api.Data;
@@ -28,14 +27,14 @@ public class SqlServerDapper : IRepository
         _connectionString = config["ConnectionStrings:Default"];
     }
 
-    public async Task<IEnumerable<CaixaModel>?> LerCaixasAsync()
+    public async Task<IEnumerable<Caixa>?> LerCaixasAsync()
     {
         try
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var caixas = await connection.QueryAsync(SelectCaixas);
-                return caixas.Select(c => new CaixaModel()
+                return caixas.Select(c => new Caixa()
                 {
                     CaixaId = c.CaixaId,
                     Dimensoes = new()
@@ -53,7 +52,7 @@ public class SqlServerDapper : IRepository
         }
     }
 
-    public async Task<bool?> EscreverAsync(IEnumerable<Views.Embalagem> embalagens)
+    public async Task<bool?> EscreverAsync(IEnumerable<EmbalagemRegistro> embalagens)
     {
         try
         {
@@ -61,15 +60,13 @@ public class SqlServerDapper : IRepository
             using (var connection = new SqlConnection(_connectionString))
             {
                 foreach (var embalagem in embalagens)
-                foreach (var caixa in embalagem.Caixas)
-                foreach (var produto in caixa.Produtos)
                 {
-                    linhasEscritas += await connection.ExecuteAsync(InsertEmbalagens,
+                    linhasEscritas += await connection.ExecuteAsync(InsertEmbalagens, // TODO: Bulk Insert
                         new
                         {
                             pedido_id = embalagem.PedidoId,
-                            caixa_id = caixa.CaixaId,
-                            produto_id = produto
+                            caixa_id = embalagem.CaixaId,
+                            produto_id = embalagem.ProdutoId
                         });
                 }
             }
@@ -82,14 +79,14 @@ public class SqlServerDapper : IRepository
         }
     }
 
-    public async Task<IEnumerable<RegistroEmbalagem>?> LerEmbalagensAsync()
+    public async Task<IEnumerable<EmbalagemRegistro>?> LerEmbalagensAsync()
     {
         try
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var embalagens = await connection.QueryAsync(SelectEmbalagens);
-                return embalagens.Select(e => new RegistroEmbalagem
+                return embalagens.Select(e => new EmbalagemRegistro
                 {
                     PedidoId = e.pedido_id,
                     CaixaId = e.caixa_id,

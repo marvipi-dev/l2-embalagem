@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Embalagem.Api.Views;
+namespace Embalagem.Api.Views.HttpResponses;
 
 public class EmbalagemGetResponse
 {

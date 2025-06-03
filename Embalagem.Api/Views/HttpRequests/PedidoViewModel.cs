@@ -1,17 +1,17 @@
 using System.Text.Json.Serialization;
 
-namespace Embalagem.Api.Views;
+namespace Embalagem.Api.Views.HttpRequests;
 
-public class Pedido
+public class PedidoViewModel
 {
     [JsonPropertyName("pedido_id")] public required int PedidoId { get; set; }
 
-    public required IEnumerable<Produto> Produtos { get; set; }
+    public required IEnumerable<ProdutoViewModel> Produtos { get; set; }
 
     [JsonIgnore]
     public int Volume => Produtos.Select(p => p.Dimensoes.Volume).Sum();
     
-    protected bool Equals(Pedido other)
+    protected bool Equals(PedidoViewModel other)
     {
         return PedidoId == other.PedidoId && Produtos.Equals(other.Produtos);
     }
@@ -33,7 +33,7 @@ public class Pedido
             return false;
         }
 
-        return Equals((Pedido)obj);
+        return Equals((PedidoViewModel)obj);
     }
 
     public override int GetHashCode()

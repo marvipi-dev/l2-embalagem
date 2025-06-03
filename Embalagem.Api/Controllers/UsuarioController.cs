@@ -1,5 +1,5 @@
 using Embalagem.Api.Data;
-using Embalagem.Api.Views;
+using Embalagem.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Embalagem.Api.Controllers;

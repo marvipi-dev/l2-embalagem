@@ -1,8 +1,10 @@
-using Embalagem.Api.Views;
+using Embalagem.Api.Helpers;
+using Embalagem.Api.Views.HttpRequests;
+using Embalagem.Api.Views.HttpResponses;
 
 namespace Embalagem.Api.Models;
 
-public class CaixaModel
+public class Caixa
 {
     public required string CaixaId { get; set; }
     public required Dimensoes Dimensoes { get; set; }
@@ -10,19 +12,19 @@ public class CaixaModel
     /// <summary>
     /// Verifica se um produto cabe dentro da caixa.
     /// </summary>
-    /// <param name="produto">O <see cref="Produto"/> para verificar.</param>
+    /// <param name="produtoViewModel">O <see cref="ProdutoViewModel"/> para verificar.</param>
     /// <returns>true se o produto cabe dentro da caixa, senão false.</returns>
-    public bool Comporta(Produto produto)
+    public bool Comporta(ProdutoViewModel produtoViewModel)
     {
-        return produto.Dimensoes < Dimensoes;
+        return produtoViewModel.Dimensoes < Dimensoes;
     }
     
     /// <summary>
     /// Verifica se todos os produtos de um único pedido cabem dentro da caixa.
     /// </summary>
-    /// <param name="pedido">Um <see cref="Pedido"/> que contém uma quantidade arbitrária de produtos.</param>
+    /// <param name="pedido">Um <see cref="PedidoViewModel"/> que contém uma quantidade arbitrária de produtos.</param>
     /// <returns>true se todos os produtos cabem dentro da caixa, senão false.</returns>
-    public bool Comporta(Pedido pedido)
+    public bool Comporta(PedidoViewModel pedido)
     {
         var dimensoesPedido = Medir(pedido);
 
@@ -32,9 +34,9 @@ public class CaixaModel
     /// <summary>
     /// Verifica se todos os produtos de uma sequência de pedidos cabem dentro da caixa.
     /// </summary>
-    /// <param name="pedidos">A sequência de <see cref="Pedido"/> para verificar.</param>
+    /// <param name="pedidos">A sequência de <see cref="PedidoViewModel"/> para verificar.</param>
     /// <returns>true se todos os produtos de todos os pedidos cabem dentro da caixa, senão false.</returns>
-    public bool Comporta(IEnumerable<Pedido> pedidos)
+    public bool Comporta(IEnumerable<PedidoViewModel> pedidos)
     {
         var dimensaoTotal = pedidos.
             Select(Medir)
@@ -43,7 +45,7 @@ public class CaixaModel
         return dimensaoTotal < Dimensoes;
     }
     
-    private static Dimensoes Medir(Pedido pedido)
+    private static Dimensoes Medir(PedidoViewModel pedido)
     {
         var dimensoesPedido = pedido.Produtos
             .Select(p => p.Dimensoes)
@@ -60,12 +62,12 @@ public class CaixaModel
     /// <summary>
     /// Embala todos os produtos dentro da caixa.
     /// </summary>
-    /// <param name="produtos">A sequência de <see cref="Produto"/> para embalar.</param>
-    /// <returns>Um <see cref="CaixaView"/> que contém todos os produtos e o id da caixa.</returns>
+    /// <param name="produtos">A sequência de <see cref="ProdutoViewModel"/> para embalar.</param>
+    /// <returns>Um <see cref="CaixaViewModel"/> que contém todos os produtos e o id da caixa.</returns>
     /// <remarks>Pressupõe que a caixa é grande o suficiente para armazenar todos os produtos.</remarks>
-    public CaixaView Embalar(IEnumerable<Produto> produtos)
+    public CaixaViewModel Embalar(IEnumerable<ProdutoViewModel> produtos)
     {
-        return new CaixaView()
+        return new CaixaViewModel()
         {
             CaixaId = CaixaId,
             Produtos = produtos.Select(p => p.ProdutoId)
