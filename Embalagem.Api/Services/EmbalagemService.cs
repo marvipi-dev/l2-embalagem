@@ -62,49 +62,60 @@ public class EmbalagemService : IEmbalagemService
             PedidoId = pe.PedidoId,
             Caixas = new List<CaixaViewModel>
             {
-                Embalar(pe.Produtos, caixas.First(c => c.Comporta(pe.Dimensoes))) 
+                Embalar(pe.Produtos, caixas.First(c => c.Comporta(pe.Dimensoes)))
             }
         }));
 
         // Embalar os pedidos que não cabem inteiramente em uma única caixa.
         while (embalavelEmVariasCaixas.Any())
         {
-            foreach (var caixa in caixas)
+            foreach (var pedido in new List<PedidoViewModel>(embalavelEmVariasCaixas))
             {
-                foreach (var pedido in new List<PedidoViewModel>(embalavelEmVariasCaixas))
+                var produtosOrdenados = pedido.Produtos.OrderBy(p => p.ProdutoId);
+                var qtdEmbalaveis = produtosOrdenados.Count();
+                var dimensoesProdutosParaEmbalar = pedido.Dimensoes;
+
+                foreach (var produto in produtosOrdenados)
                 {
-                    var qtdEmbalaveis = pedido.Produtos.Count(p => caixa.Comporta(p.Dimensoes));
-
-                    var couberam = pedido.Produtos.Take(qtdEmbalaveis);
-                    var naoCouberam = pedido.Produtos.Skip(qtdEmbalaveis);
-
-                    if (couberam.Any())
+                    if (caixas.Any(c => c.Comporta(dimensoesProdutosParaEmbalar)))
                     {
-                        embalagens.Add(new()
-                        {
-                            PedidoId = pedido.PedidoId,
-                            Caixas = new List<CaixaViewModel>
-                            {
-                                new()
-                                {
-                                    CaixaId = caixa.CaixaId,
-                                    Produtos = couberam.Select(p => p.ProdutoId)
-                                }
-                            },
-                        });
+                        break;
                     }
 
-                    if (naoCouberam.Any())
-                    {
-                        embalavelEmVariasCaixas.Add(new()
-                        {
-                            PedidoId = pedido.PedidoId,
-                            Produtos = naoCouberam
-                        });
-                    }
-                    
-                    embalavelEmVariasCaixas.Remove(pedido);
+                    qtdEmbalaveis--;
+                    dimensoesProdutosParaEmbalar -= produto.Dimensoes;
                 }
+
+                var caixa = caixas.First(c => c.Comporta(dimensoesProdutosParaEmbalar));
+                var couberam = produtosOrdenados.Take(qtdEmbalaveis);
+                var naoCouberam = produtosOrdenados.Skip(qtdEmbalaveis);
+
+                if (couberam.Any())
+                {
+                    embalagens.Add(new()
+                    {
+                        PedidoId = pedido.PedidoId,
+                        Caixas = new List<CaixaViewModel>
+                        {
+                            new()
+                            {
+                                CaixaId = caixa.CaixaId,
+                                Produtos = couberam.Select(p => p.ProdutoId)
+                            }
+                        },
+                    });
+                }
+
+                if (naoCouberam.Any())
+                {
+                    embalavelEmVariasCaixas.Add(new()
+                    {
+                        PedidoId = pedido.PedidoId,
+                        Produtos = naoCouberam
+                    });
+                }
+
+                embalavelEmVariasCaixas.Remove(pedido);
             }
         }
 
@@ -122,7 +133,7 @@ public class EmbalagemService : IEmbalagemService
                 }
             }
         }));
-        
+
 
         // Agrupar embalagens por id.
         var embalagensAgrupadasPorPedido = new List<EmbalagemViewModel>();
@@ -145,7 +156,7 @@ public class EmbalagemService : IEmbalagemService
         }
 
         var embalagensOrdenadasPorPedido = embalagensAgrupadasPorPedido.OrderBy(e => e.PedidoId);
-        
+
         var registros = RegistrarEmbalagens(embalagensOrdenadasPorPedido);
         var sucesso = await _repository.EscreverAsync(registros);
         if (!sucesso.HasValue || !sucesso.Value)
@@ -155,7 +166,7 @@ public class EmbalagemService : IEmbalagemService
 
         return embalagensOrdenadasPorPedido;
     }
-    
+
     private CaixaViewModel Embalar(IEnumerable<ProdutoViewModel> produtos, Caixa caixa)
     {
         return new CaixaViewModel()
@@ -165,7 +176,8 @@ public class EmbalagemService : IEmbalagemService
         };
     }
 
-    private static IEnumerable<EmbalagemRegistro> RegistrarEmbalagens(IOrderedEnumerable<EmbalagemViewModel> embalagensOrdenadasPorPedido)
+    private static IEnumerable<EmbalagemRegistro> RegistrarEmbalagens(
+        IOrderedEnumerable<EmbalagemViewModel> embalagensOrdenadasPorPedido)
     {
         return embalagensOrdenadasPorPedido
             .SelectMany(e => e.Caixas

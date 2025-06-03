@@ -47,6 +47,16 @@ public class Dimensoes
         };
     }
     
+    public static Dimensoes operator -(Dimensoes esquerda, Dimensoes direita)
+    {
+        return new()
+        {
+            Altura = esquerda.Altura - direita.Altura,
+            Largura = esquerda.Largura - direita.Largura,
+            Comprimento = esquerda.Comprimento - direita.Comprimento
+        };
+    }
+    
     public static bool operator <(Dimensoes esquerda, Dimensoes direita)
     {
         return esquerda.Altura < direita.Altura
