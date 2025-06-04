@@ -1,5 +1,6 @@
 using Embalagem.Api.Data;
 using Embalagem.Api.Models;
+using Embalagem.Api.Views.ExtensionMethods;
 using Embalagem.Api.Views.HttpRequests;
 using Embalagem.Api.Views.HttpResponses;
 
@@ -33,12 +34,12 @@ public class EmbalagemService : IEmbalagemService
             return null;
         }
 
-        caixas = caixas.OrderBy(c => c.Dimensoes.Volume);
-        var pedidosPorVolume = pedidos.OrderBy(p => p.Volume);
+        caixas = caixas.OrderBy(c => c);
+        var pedidosPorVolume = pedidos.OrderBy(pe => pe.Dimensoes());
 
         // Separar e classificar os pedidos.
         var naoEmbalaveisEmUmaCaixa = pedidosPorVolume
-            .Where(pe => caixas.All(c => !c.Comporta(pe.Dimensoes)));
+            .Where(pe => caixas.All(c => !c.Comporta(pe.Dimensoes())));
 
         var embalaveisEmUmaCaixa = pedidosPorVolume.Except(naoEmbalaveisEmUmaCaixa);
 
@@ -62,7 +63,7 @@ public class EmbalagemService : IEmbalagemService
             PedidoId = pe.PedidoId,
             Caixas = new List<CaixaViewModel>
             {
-                Embalar(pe.Produtos, caixas.First(c => c.Comporta(pe.Dimensoes)))
+                Embalar(pe.Produtos, caixas.First(c => c.Comporta(pe.Dimensoes())))
             }
         }));
 
@@ -73,7 +74,7 @@ public class EmbalagemService : IEmbalagemService
             {
                 var produtosOrdenados = pedido.Produtos.OrderBy(p => p.ProdutoId);
                 var qtdEmbalaveis = produtosOrdenados.Count();
-                var dimensoesProdutosParaEmbalar = pedido.Dimensoes;
+                var dimensoesProdutosParaEmbalar = pedido.Dimensoes();
 
                 foreach (var produto in produtosOrdenados)
                 {

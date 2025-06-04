@@ -33,17 +33,7 @@ public class SqlServerDapper : IRepository
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var caixas = await connection.QueryAsync(SelectCaixas);
-                return caixas.Select(c => new Caixa()
-                {
-                    CaixaId = c.CaixaId,
-                    Dimensoes = new()
-                    {
-                        Altura = c.altura,
-                        Largura = c.largura,
-                        Comprimento = c.comprimento
-                    }
-                });
+                return await connection.QueryAsync<Caixa>(SelectCaixas);
             }
         }
         catch

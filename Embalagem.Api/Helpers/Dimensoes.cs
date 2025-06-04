@@ -1,15 +1,68 @@
 namespace Embalagem.Api.Helpers;
 
-public class Dimensoes
+public class Dimensoes : IComparable<Dimensoes>, IComparable
 {
     public required int Altura { get; set; }
     public required int Largura { get; set; }
     public required int Comprimento { get; set; }
     public int Volume => Altura * Largura * Comprimento;
 
+    public int Menor => new List<int>() { Altura, Largura, Comprimento }.Order().First();
+    public int Media => new List<int>() { Altura, Largura, Comprimento }.Order().ElementAt(1);
+    public int Maior => new List<int>() { Altura, Largura, Comprimento }.Order().Last();
+    
+
+    public static Dimensoes operator +(Dimensoes esquerda, Dimensoes direita)
+    {
+        return new()
+        {
+            Altura = esquerda.Altura + direita.Altura,
+            Largura = esquerda.Largura + direita.Largura,
+            Comprimento = esquerda.Comprimento + direita.Comprimento
+        };
+    }
+    
+    public static Dimensoes operator -(Dimensoes esquerda, Dimensoes direita)
+    {
+        return new()
+        {
+            Altura = esquerda.Altura - direita.Altura,
+            Largura = esquerda.Largura - direita.Largura,
+            Comprimento = esquerda.Comprimento - direita.Comprimento
+        };
+    }
+    
+    public static bool operator <(Dimensoes esquerda, Dimensoes direita)
+    {
+        return esquerda.Menor < direita.Menor
+               && esquerda.Media < direita.Media
+               && esquerda.Maior < direita.Maior;
+    }
+    
+    public static bool operator >(Dimensoes esquerda, Dimensoes direita)
+    {
+        return  esquerda.Menor > direita.Menor
+                && esquerda.Media > direita.Media
+                && esquerda.Maior > direita.Maior;
+    }
+    
+    public static bool operator ==(Dimensoes esquerda, Dimensoes direita)
+    {
+        return esquerda.Menor == direita.Menor
+               && esquerda.Media == direita.Media
+               && esquerda.Maior == direita.Maior;
+    }
+    
+    public static bool operator !=(Dimensoes esquerda, Dimensoes direita)
+    {
+        return esquerda.Menor != direita.Menor
+               || esquerda.Media != direita.Media
+               || esquerda.Maior != direita.Maior;
+    }
+    
     protected bool Equals(Dimensoes other)
     {
-        return Altura == other.Altura && Largura == other.Largura && Comprimento == other.Comprimento;
+        return this == other;
     }
 
     public override bool Equals(object? obj)
@@ -36,38 +89,44 @@ public class Dimensoes
     {
         return HashCode.Combine(Altura, Largura, Comprimento);
     }
+    
+    public int CompareTo(Dimensoes? other)
+    {
+        if (ReferenceEquals(this, other))
+        {
+            return 0;
+        }
 
-    public static Dimensoes operator +(Dimensoes esquerda, Dimensoes direita)
-    {
-        return new()
+        if (other is null)
         {
-            Altura = esquerda.Altura + direita.Altura,
-            Largura = esquerda.Largura + direita.Largura,
-            Comprimento = esquerda.Comprimento + direita.Comprimento
-        };
-    }
-    
-    public static Dimensoes operator -(Dimensoes esquerda, Dimensoes direita)
-    {
-        return new()
+            return 1;
+        }
+
+        if (this < other)
         {
-            Altura = esquerda.Altura - direita.Altura,
-            Largura = esquerda.Largura - direita.Largura,
-            Comprimento = esquerda.Comprimento - direita.Comprimento
-        };
+            return -1;
+        }
+
+        if (this == other)
+        {
+            return 0;
+        }
+
+        return 1;
     }
-    
-    public static bool operator <(Dimensoes esquerda, Dimensoes direita)
+
+    public int CompareTo(object? obj)
     {
-        return esquerda.Altura < direita.Altura
-               && esquerda.Largura < direita.Largura
-               && esquerda.Comprimento < direita.Comprimento;
-    }
-    
-    public static bool operator >(Dimensoes esquerda, Dimensoes direita)
-    {
-        return esquerda.Altura > direita.Altura
-               && esquerda.Largura > direita.Largura
-               && esquerda.Comprimento > direita.Comprimento;
+        if (obj is null)
+        {
+            return 1;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return 0;
+        }
+
+        return obj is Dimensoes other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(Dimensoes)}");
     }
 }

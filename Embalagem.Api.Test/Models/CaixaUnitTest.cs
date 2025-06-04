@@ -3,7 +3,7 @@ using Embalagem.Api.Models;
 
 namespace Embalagem.Api.Test.Models;
 
-public class CaixaTest
+public class CaixaUnitTest
 {
     [Fact]
     public void Comporta_DimensoesMaiores_RetornaFalso()
@@ -11,19 +11,15 @@ public class CaixaTest
         // Arrange
         var caixa = new Caixa()
         {
-            CaixaId = "_",
-            Dimensoes = new()
-            {
-                Altura = 5,
-                Largura = 10,
-                Comprimento = 7
-            }
+            CaixaId = "_", Altura = 5,
+            Largura = 10,
+            Comprimento = 7
         };
         var dimensoes = new Dimensoes()
         {
-            Altura = caixa.Dimensoes.Altura + 1,
-            Largura = caixa.Dimensoes.Largura + 1,
-            Comprimento = caixa.Dimensoes.Comprimento + 1
+            Altura = caixa.Altura + 1,
+            Largura = caixa.Largura + 1,
+            Comprimento = caixa.Comprimento + 1
         };
 
         // Act
@@ -39,19 +35,15 @@ public class CaixaTest
         // Arrange
         var caixa = new Caixa()
         {
-            CaixaId = "_",
-            Dimensoes = new()
-            {
-                Altura = 25,
-                Largura = 40,
-                Comprimento = 30
-            }
+            CaixaId = "_", Altura = 25,
+            Largura = 40,
+            Comprimento = 30
         };
         var dimensoes = new Dimensoes()
         {
-            Altura = caixa.Dimensoes.Altura,
-            Largura = caixa.Dimensoes.Largura,
-            Comprimento = caixa.Dimensoes.Comprimento
+            Altura = caixa.Altura,
+            Largura = caixa.Largura,
+            Comprimento = caixa.Comprimento
         };
 
         // Act
@@ -67,19 +59,15 @@ public class CaixaTest
         // Arrange
         var caixa = new Caixa()
         {
-            CaixaId = "_",
-            Dimensoes = new()
-            {
-                Altura = 15,
-                Largura = 30,
-                Comprimento = 45
-            }
+            CaixaId = "_", Altura = 15,
+            Largura = 30,
+            Comprimento = 45
         };
         var dimensoes = new Dimensoes()
         {
-            Altura = caixa.Dimensoes.Altura - 1,
-            Largura = caixa.Dimensoes.Largura - 1,
-            Comprimento = caixa.Dimensoes.Comprimento - 1
+            Altura = caixa.Altura - 1,
+            Largura = caixa.Largura - 1,
+            Comprimento = caixa.Comprimento - 1
         };
 
         // Act
