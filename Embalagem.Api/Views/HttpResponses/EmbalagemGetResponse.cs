@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Embalagem.Api.Views;
+namespace Embalagem.Api.Views.HttpResponses;
 
 public class EmbalagemGetResponse
 {
@@ -8,5 +8,5 @@ public class EmbalagemGetResponse
 
     [JsonPropertyName("caixa_id")] public string? CaixaId { get; set; }
 
-    [JsonPropertyName("produto_id")] public string ProdutoId { get; set; }
+    [JsonPropertyName("produto_id")] public required string ProdutoId { get; set; }
 }

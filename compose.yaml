@@ -5,19 +5,19 @@
       context: .
       dockerfile: Embalagem.Api/Dockerfile
     ports:
-      - "5233:8080"
-      - "5234:8081"
+      - "80:8080"
     depends_on:
       - embalagem-repository-sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Server=embalagem-repository-sqlserver,1433;Database=Embalagem;User ID=sa;Password=@SuperSecure1;Trusted_Connection=False;TrustServerCertificate=True;
     networks:
       - embalagem-network
     restart: on-failure
   
   
   embalagem-repository-sqlserver:
-    image: marvipi/embalagem-repository-sqlserver:latest
+    image: marvipi/embalagem-repository-sqlserver:dev
     ports:
       - "1433:1433"
     networks:
