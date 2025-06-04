@@ -34,7 +34,7 @@ public class EmbalagemService : IEmbalagemService
             return null;
         }
 
-        caixas = caixas.OrderBy(c => c);
+        caixas = caixas.OrderBy(c => c.Volume);
         var pedidosPorVolume = pedidos.OrderBy(pe => pe.Dimensoes());
 
         // Separar e classificar os pedidos.
