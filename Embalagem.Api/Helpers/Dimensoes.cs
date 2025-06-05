@@ -107,12 +107,12 @@ public class Dimensoes : IComparable<Dimensoes>, IComparable
             return -1;
         }
 
-        if (this == other)
+        if (this > other)
         {
-            return 0;
+            return 1;
         }
 
-        return 1;
+        return 0;
     }
 
     public int CompareTo(object? obj)
