@@ -19,6 +19,9 @@ public class AutenticacaoController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GerarToken([FromBody] Usuario usuario)
     {
         var valido = await _usuarioRepository.ValidarAsync(usuario);

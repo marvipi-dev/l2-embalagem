@@ -16,6 +16,8 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> Registrar([FromBody] Usuario usuario)
     {
         var existe = await _usuarioRepository.ExisteAsync(usuario);

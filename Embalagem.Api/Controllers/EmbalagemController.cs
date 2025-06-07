@@ -19,6 +19,8 @@ public class EmbalagemController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> Embalagem()
     {
         var embalados = await _embalagemService.BuscarEmbaladosAsync();
@@ -36,6 +38,8 @@ public class EmbalagemController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult>  Embalagem(EmbalagemPostRequest postRequest)
     {
         var embalados = await _embalagemService.EmbalarAsync(postRequest.Pedidos);
