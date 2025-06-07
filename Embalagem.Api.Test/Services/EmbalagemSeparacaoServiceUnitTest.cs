@@ -317,7 +317,7 @@ public class EmbalagemSeparacaoServiceUnitTest
     }
     
 
-    public static IEnumerable<Caixa> Caixas => new List<Caixa>()
+    private static IEnumerable<Caixa> Caixas => new List<Caixa>()
     {
         new() { CaixaId = "_", Altura = 30, Largura = 40, Comprimento = 80 },
         new() { CaixaId = "__", Altura = 80, Largura = 50, Comprimento = 40 },

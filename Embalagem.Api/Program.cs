@@ -78,6 +78,7 @@ builder.Services.AddSingleton<IEmbalagemRepository>(_ => new SqlServerDapper(con
 builder.Services.AddSingleton<IUsuarioRepository>(_ => new SqlServerDapper(config));
 builder.Services.AddScoped<IAutenticacaoService>(_ => new AutenticacaoService(config));
 builder.Services.AddScoped<IEmbalagemSeparacaoService, EmbalagemSeparacaoService>();
+builder.Services.AddScoped<IEmbalagemPreparacaoService, EmbalagemPreparacaoService>();
 builder.Services.AddScoped<IEmbalagemService, EmbalagemService>();
 
 
