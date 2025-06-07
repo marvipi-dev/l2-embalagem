@@ -8,17 +8,17 @@ namespace Embalagem.Api.Controllers;
 [ApiController]
 public class UsuarioController : ControllerBase
 {
-    private readonly IRepository _repository;
+    private readonly IUsuarioRepository _usuarioRepository;
 
-    public UsuarioController(IRepository repository)
+    public UsuarioController(IUsuarioRepository usuarioRepository)
     {
-        _repository = repository;
+        _usuarioRepository = usuarioRepository;
     }
 
     [HttpPost]
     public async Task<IActionResult> Registrar([FromBody] Usuario usuario)
     {
-        var existe = await _repository.ExisteAsync(usuario);
+        var existe = await _usuarioRepository.ExisteAsync(usuario);
         if (existe == null)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable);
@@ -29,7 +29,7 @@ public class UsuarioController : ControllerBase
             return Conflict("Usuario já cadastrado");
         }
 
-        var sucesso = await _repository.EscreverAsync(usuario);
+        var sucesso = await _usuarioRepository.EscreverAsync(usuario);
         if (sucesso == null || !sucesso.Value)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable);

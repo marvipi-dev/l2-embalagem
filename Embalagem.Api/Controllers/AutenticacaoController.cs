@@ -10,18 +10,18 @@ namespace Embalagem.Api.Controllers;
 public class AutenticacaoController : ControllerBase
 {
     private readonly IAutenticacaoService _autenticacaoService;
-    private readonly IRepository _repository;
+    private readonly IUsuarioRepository _usuarioRepository;
 
-    public AutenticacaoController(IRepository repository, IAutenticacaoService autenticacao)
+    public AutenticacaoController(IUsuarioRepository usuarioRepository, IAutenticacaoService autenticacao)
     {
-        _repository = repository;
+        _usuarioRepository = usuarioRepository;
         _autenticacaoService = autenticacao;
     }
 
     [HttpPost]
     public async Task<IActionResult> GerarToken([FromBody] Usuario usuario)
     {
-        var valido = await _repository.ValidarAsync(usuario);
+        var valido = await _usuarioRepository.ValidarAsync(usuario);
         if (valido == null)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable);

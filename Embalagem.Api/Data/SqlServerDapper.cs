@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Embalagem.Api.Data;
 
-public class SqlServerDapper : IRepository
+public class SqlServerDapper : IEmbalagemRepository, IUsuarioRepository
 {
     private const string SelectCaixas = @"SELECT caixa_id AS CaixaId, altura, largura, comprimento FROM Caixa";
 

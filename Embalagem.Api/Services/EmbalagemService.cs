@@ -8,18 +8,18 @@ namespace Embalagem.Api.Services;
 
 public class EmbalagemService : IEmbalagemService
 {
-    private readonly IRepository _repository;
+    private readonly IEmbalagemRepository _embalagemRepository;
     private readonly IEmbalagemSeparacaoService _embalagemSeparacaoService;
 
     public EmbalagemService(IRepository repository, IEmbalagemSeparacaoService embalagemSeparacaoService)
     {
-        _repository = repository;
+        _embalagemRepository = embalagemRepository;
         _embalagemSeparacaoService = embalagemSeparacaoService;
     }
 
     public async Task<IEnumerable<EmbalagemRegistro>?> BuscarEmbaladosAsync()
     {
-        return await _repository.LerEmbalagensAsync();
+        return await _embalagemRepository.LerEmbalagensAsync();
     }
 
     public async Task<IOrderedEnumerable<EmbalagemViewModel>?> EmbalarAsync(IEnumerable<PedidoViewModel> pedidos)
@@ -29,7 +29,7 @@ public class EmbalagemService : IEmbalagemService
             return new List<EmbalagemViewModel>().Order();
         }
 
-        var caixas = await _repository.LerCaixasAsync();
+        var caixas = await _embalagemRepository.LerCaixasAsync();
         if (caixas == null)
         {
             return null;
@@ -96,7 +96,7 @@ public class EmbalagemService : IEmbalagemService
         var embalagensOrdenadasPorPedido = embalagensAgrupadasPorPedidoId.OrderBy(e => e.PedidoId);
 
         var registros = RegistrarEmbalagens(embalagensOrdenadasPorPedido);
-        var sucesso = await _repository.EscreverAsync(registros);
+        var sucesso = await _embalagemRepository.EscreverAsync(registros);
         if (!sucesso.HasValue || !sucesso.Value)
         {
             return null;
